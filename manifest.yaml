@@ -1,0 +1,11 @@
+apiVersion: thinkube.io/v1
+kind: TemplateManifest
+metadata:
+  name: tkt-webapp-react-fastapi
+  title: React + FastAPI Web Application
+  description: Full-stack web application with a React frontend built on thinkube-style (shadcn/ui), a FastAPI backend, PostgreSQL database, and API documentation
+  version: 1.0.0
+  author: Alejandro Martínez Corriá
+  tags: ["webapp", "react", "shadcn", "fastapi", "fullstack", "database"]
+
+parameters: []  # No parameters - this template includes everything!
