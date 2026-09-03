@@ -135,10 +135,6 @@
       "message": "Unable to load user information.",
       "reload": "Reload"
     },
-    "boundary": {
-      "title": "Something went wrong",
-      "details": "Error details"
-    },
     "general": {
       "loading": "Loading..."
     }

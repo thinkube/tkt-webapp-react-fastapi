@@ -9,24 +9,25 @@ export default function AuthCallbackPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { t } = useTranslation();
-  const [error, setError] = useState<string | null>(null);
+  const [exchangeFailed, setExchangeFailed] = useState(false);
   const hasExecuted = useRef(false);
 
+  const errorParam = searchParams.get('error');
+  const code = searchParams.get('code');
+
+  // Keycloak's own error and a missing code are visible from the URL alone;
+  // only a failed exchange has to wait for the request.
+  const error = errorParam
+    ? `${t('auth.loginFailed')}: ${errorParam}`
+    : !code
+      ? t('auth.noCode')
+      : exchangeFailed
+        ? t('auth.loginFailed')
+        : null;
+
   useEffect(() => {
-    if (hasExecuted.current) return;
+    if (errorParam || !code || hasExecuted.current) return;
     hasExecuted.current = true;
-
-    const errorParam = searchParams.get('error');
-    if (errorParam) {
-      setError(`${t('auth.loginFailed')}: ${errorParam}`);
-      return;
-    }
-
-    const code = searchParams.get('code');
-    if (!code) {
-      setError(t('auth.noCode'));
-      return;
-    }
 
     handleAuthCallback(code)
       .then(() => {
@@ -34,8 +35,8 @@ export default function AuthCallbackPage() {
         sessionStorage.removeItem('intendedRoute');
         navigate(intendedRoute || '/', { replace: true });
       })
-      .catch(() => setError(t('auth.loginFailed')));
-  }, [searchParams, navigate, t]);
+      .catch(() => setExchangeFailed(true));
+  }, [code, errorParam, navigate]);
 
   if (error) {
     return (

@@ -27,7 +27,8 @@ spec:
       health: /health
       test:
         enabled: true
-        image: "node:24-alpine"
+        # node-base carries git, which npm needs to install thinkube-style
+        image: "node-base:22-alpine"
         command: "./run_tests.sh"
         one: "./run_tests.sh <file>"
 

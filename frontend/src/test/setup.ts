@@ -29,9 +29,3 @@ globalThis.ResizeObserver = class {
   unobserve() {}
   disconnect() {}
 };
-
-// Radix menus and selects drive pointer capture and scrolling that jsdom leaves out.
-Element.prototype.hasPointerCapture = vi.fn(() => false);
-Element.prototype.setPointerCapture = vi.fn();
-Element.prototype.releasePointerCapture = vi.fn();
-Element.prototype.scrollIntoView = vi.fn();

@@ -135,10 +135,6 @@
       "message": "No s'ha pogut carregar la informacio de l'usuari.",
       "reload": "Recarregar"
     },
-    "boundary": {
-      "title": "Alguna cosa ha anat malament",
-      "details": "Detalls de l'error"
-    },
     "general": {
       "loading": "Carregant..."
     }

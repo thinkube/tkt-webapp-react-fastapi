@@ -5,7 +5,6 @@ import { ListTodo, Settings, Key } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { LanguageMenu } from '@/components/LanguageMenu';
 import { UserMenu } from '@/components/UserMenu';
-import ErrorBoundary from '@/components/ErrorBoundary';
 import HomePage from '@/pages/HomePage';
 import ApiTokensPage from '@/pages/ApiTokensPage';
 import NotFoundPage from '@/pages/NotFoundPage';
@@ -61,13 +60,11 @@ export default function App() {
         </div>
       }
     >
-      <ErrorBoundary>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/tokens" element={<ApiTokensPage />} />
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </ErrorBoundary>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/tokens" element={<ApiTokensPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
     </TkAppLayout>
   );
 }

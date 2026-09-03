@@ -1,10 +1,8 @@
 # Build stage - use optimized base from library
 ARG CONTAINER_REGISTRY
-FROM ${CONTAINER_REGISTRY}/library/node:24-alpine AS build-stage
+# node-base carries git, which npm needs to install thinkube-style
+FROM ${CONTAINER_REGISTRY}/library/node-base:22-alpine AS build-stage
 WORKDIR /app
-
-# thinkube-style is installed straight from its git repository
-RUN apk add --no-cache git
 
 COPY package*.json ./
 RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi

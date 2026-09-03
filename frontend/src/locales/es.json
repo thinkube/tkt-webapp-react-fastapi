@@ -135,10 +135,6 @@
       "message": "No se pudo cargar la informacion del usuario.",
       "reload": "Recargar"
     },
-    "boundary": {
-      "title": "Algo ha ido mal",
-      "details": "Detalles del error"
-    },
     "general": {
       "loading": "Cargando..."
     }

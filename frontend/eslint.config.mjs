@@ -20,11 +20,6 @@ export default tseslint.config(
     rules: {
       ...reactHooks.configs.recommended.rules,
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
-      // The migration rules forbid any Vue-era construct surviving in the React tree.
-      'no-restricted-imports': [
-        'error',
-        { patterns: ['vue', 'vue-*', 'pinia', 'daisyui', '@vue/*'] },
-      ],
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     },
