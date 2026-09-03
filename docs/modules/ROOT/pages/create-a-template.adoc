@@ -1,0 +1,122 @@
+= Turn your app into a template
+:page-type: how-to
+:page-docref: b6n1
+
+There are two ways to get a template. Publish an app that already works, or write
+one by hand. The first is the normal one.
+
+== Publish an app you have built
+
+. Get the app working and pushed. What you publish is the checkout at
+  `~/apps/<name>`, so anything uncommitted is published too.
+. In thinkube-control, open *Templates* and choose *Publish as Template* on your
+  app.
+. Give the template a name, a description and tags, and choose whether the
+  repository is private.
+. Publish. The platform creates the GitHub repository, pushes the code, and
+  registers the template in the catalog so it appears for the next deployment.
+
+Nothing is transformed on the way out, because nothing was substituted on the way
+in.
+
+=== What is left behind
+
+These are dropped when your app is published:
+
+[cols="1,2",options="header"]
+|===
+| Left behind | Why
+
+| `k8s/` | Generated from `thinkube.yaml` at deploy time, and specific to your cluster.
+| `.git` | The new repository gets its own history.
+| `.copier-answers.yml` | The answers to your deployment, not the next one's.
+| `.deployment-trigger` | A deploy marker.
+| `node_modules`, `__pycache__`, `.venv` | Build and cache artefacts.
+|===
+
+=== What is carried, and should be
+
+Your source, your tests, `thinkube.yaml`, `manifest.yaml`, and your
+documentation. Also every *declaration* you added: the parameters your app asks
+for, its `spec.env` defaults, its dependencies, its `publicEnv` allow-list. A
+template that forgot what it needs would not deploy.
+
+[IMPORTANT]
+====
+Values do not travel, but anything you hardcoded does. If you typed your
+company's name into the source rather than reading it from a variable, the next
+person's app is named after your company. See
+xref:variables.adoc[How configuration reaches your app].
+====
+
+== Write a template by hand
+
+A template is an application repository with two extra files at its root.
+
+`manifest.yaml` describes the template in the catalog and declares what to ask at
+deploy time:
+
+[source,yaml]
+----
+apiVersion: thinkube.io/v1
+kind: TemplateManifest
+metadata:
+  name: tkt-my-template
+  title: My Application
+  description: What it is, in one line
+  version: 1.0.0
+  author: Your Name
+  tags: ["webapp", "fastapi"]
+
+parameters: []
+----
+
+`thinkube.yaml` declares what the application *is* — its containers, how each is
+built and tested, its routes and the platform services it needs:
+
+[source,yaml]
+----
+apiVersion: thinkube.io/v1
+kind: ThinkubeDeployment
+
+spec:
+  containers:
+    - name: backend
+      build: ./backend
+      port: 8000
+      health: /health
+      test:
+        enabled: true
+        command: "./run_tests.sh"
+        one: "./run_tests.sh <file>"
+
+  routes:
+    - path: /
+      to: backend
+
+  services:
+    - database
+----
+
+The full field list is in the xref:thinkube-docs:reference/thinkube-yaml.adoc[thinkube.yaml reference].
+
+Then:
+
+. Give every container a health endpoint. The platform uses it to decide whether
+  the app is up.
+. Give every container a `run_tests.sh` that runs the whole suite with no
+  arguments and one file with a file argument. Keep the test settings in that
+  script, not spread across `thinkube.yaml`.
+. Use `+${CONTAINER_REGISTRY}+` for base images in your Dockerfiles, so the
+  template works on any cluster.
+. Write no placeholders into the source. Read what varies from the environment.
+. Push to GitHub and add the repository to `thinkube-metadata` so it appears in
+  the catalog.
+
+== Check it round-trips
+
+The test of a template is not that it deploys. It is that an app deployed from
+it, improved and published back, produces a template you would deploy again.
+Before you publish, look for your own app's identity in the source: its name in
+`package.json`, in a page title, in a heading. Each one is a value that should
+have been a variable.

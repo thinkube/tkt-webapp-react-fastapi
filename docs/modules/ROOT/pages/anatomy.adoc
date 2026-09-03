@@ -1,0 +1,107 @@
+= What is in this template
+:page-type: reference
+:page-docref: k7t4
+
+A full-stack task manager: React frontend, FastAPI backend, PostgreSQL, Keycloak
+sign-in, three languages, and tests on both sides.
+
+== Repository layout
+
+[cols="1,3",options="header"]
+|===
+| Path | What it is
+
+| `manifest.yaml` | Catalog entry: title, description, tags, and the parameters asked at deploy time.
+| `thinkube.yaml` | What the application is: containers, tests, routes, services, `publicEnv`.
+| `backend/` | FastAPI application, Alembic migrations, pytest suite.
+| `frontend/` | React application, Vitest suite, nginx config, container entrypoint.
+| `docs/` | These pages, aggregated into the Thinkube documentation at build time.
+| `k8s/` | Generated at deploy time. Not in the template; not published back.
+|===
+
+== Backend
+
+[cols="1,3",options="header"]
+|===
+| Path | What it is
+
+| `app/api/tasks.py` | Task CRUD, scoped to the signed-in user.
+| `app/api/auth.py` | Keycloak configuration, code exchange, user info, token refresh.
+| `app/api/tokens.py` | API tokens for calling this app from scripts.
+| `app/core/security.py` | Request authentication.
+| `app/core/config.py` | Settings, read from the environment.
+| `app/models/` | SQLAlchemy models and Pydantic schemas.
+| `alembic/` | Migrations. `thinkube.yaml` runs them on startup.
+| `run_tests.sh` | The whole suite with no arguments; one file with a file argument.
+|===
+
+Routes are served under `/api/v1`.
+
+== Frontend
+
+[cols="1,3",options="header"]
+|===
+| Path | What it is
+
+| `src/App.tsx` | The `TkAppLayout` shell: sidebar, top bar, routes.
+| `src/main.tsx` | Entry point, theme provider, router, unauthenticated routes.
+| `src/pages/` | `HomePage` (tasks), `ApiTokensPage`, `LoginPage`, `AuthCallbackPage`, `NotFoundPage`.
+| `src/components/` | `TaskCard`, `TaskDialog`, `UserMenu`, `ThemeToggle`, `LanguageMenu`, `RequireAuth`.
+| `src/stores/` | Zustand stores: auth, tasks, tokens.
+| `src/lib/axios.ts` | API client with the token-refresh interceptor.
+| `src/lib/auth.ts` | The OAuth2 code flow against Keycloak.
+| `src/lib/publicConfig.ts` | Reads the variables the deployment published.
+| `src/locales/` | English, Spanish and Catalan.
+| `public-config.sh` | Runs before nginx; writes `config.js` from `PUBLIC_ENV_VARS`.
+| `run_tests.sh` | Type check, lint, the suite, coverage.
+|===
+
+== Stack
+
+[cols="1,2",options="header"]
+|===
+| Concern | Choice
+
+| UI | React 19, TypeScript, Vite
+| Components | `thinkube-style` — Tk components on shadcn/ui and Radix
+| Styling | Tailwind CSS 4, light and dark themes
+| State | Zustand
+| Routing | React Router
+| Translation | react-i18next
+| Tests | Vitest and React Testing Library
+| API | FastAPI, SQLAlchemy, Alembic, PostgreSQL
+| Sign-in | Keycloak, OAuth2 authorization code flow
+|===
+
+The layout is `TkAppLayout` from `thinkube-style`: a collapsible sidebar with
+grouped navigation and a top bar. It is the shell thinkube-control uses, so
+applications built from this template look like the rest of the platform.
+
+== What each part demonstrates
+
+[cols="1,2",options="header"]
+|===
+| Feature | Where to look
+
+| Reading a deployment's variables in the browser | `public-config.sh`, `src/lib/publicConfig.ts`, `publicEnv` in `thinkube.yaml`
+| Sign-in without writing an auth server | `src/lib/auth.ts`, `backend/app/api/auth.py`
+| Tokens for machine callers | `src/pages/ApiTokensPage.tsx`, `backend/app/api/tokens.py`
+| Tests that gate the build | `run_tests.sh` in both containers, `test:` in `thinkube.yaml`
+| Migrations that run themselves | `backend/alembic/`, `migrations:` in `thinkube.yaml`
+| A database you did not provision | `services: [database]` in `thinkube.yaml`
+| Translated interface | `src/locales/`, `src/i18n/index.ts`
+|===
+
+== Deploy-time behaviour
+
+[cols="1,2",options="header"]
+|===
+| Declared | Effect
+
+| `services: [database]` | PostgreSQL database and `DATABASE_URL`
+| `migrations.auto: true` | Alembic runs on startup
+| `routes` | `/api` to the backend, `/` to the frontend
+| `test.enabled: true` | Tests run in CI before the image is built
+| `publicEnv: [APP_TITLE]` | The deployment's name reaches the browser
+| `health: /health` | The platform's liveness and readiness checks
+|===

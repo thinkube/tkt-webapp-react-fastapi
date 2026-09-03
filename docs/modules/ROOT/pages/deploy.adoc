@@ -1,0 +1,68 @@
+= Deploy this template — a running task app of your own
+:page-type: tutorial
+:page-docref: w8k5
+
+You will turn this template into a running application on your cluster, with its
+own database, its own login, and its own address. It takes about five minutes,
+most of which is the build. You need a Thinkube cluster and an account on it.
+
+== Step 1: Deploy the template
+
+Ask Claude from code-server:
+
+[source,text]
+----
+Deploy the template https://github.com/thinkube/tkt-webapp-react-fastapi
+and call it tasks
+----
+
+The name you choose is the application's identity everywhere: its namespace, its
+database, its Keycloak client, and its address.
+
+You can do the same from thinkube-control's *Templates* page, which lists every
+template in the catalog and asks for the name in a form.
+
+Either way the deployment starts in the background and returns an id.
+
+== Step 2: Watch the platform assemble the app
+
+Ask Claude for the deployment status, or watch the *Deployments* view. The phases
+run in order:
+
+. *Setup and Copier* — the template is copied to `~/apps/tasks`. Nothing is
+  rendered; see xref:index.adoc[The template round trip].
+. *Resource gathering and creation* — namespace, TLS certificate, PostgreSQL
+  database, Keycloak client, registry pull secret.
+. *Git operations* — `k8s/` manifests are generated from `thinkube.yaml`, a Gitea
+  repository is created, the code is pushed, and a webhook and an ArgoCD
+  application are wired up.
+. *Build* — the push triggers an Argo Workflow: backend tests, frontend tests,
+  then container images for amd64 and arm64.
+. *Rollout* — ArgoCD syncs the manifests and the pods start.
+
+A test failure stops the build, and the deployment fails with it. That is the
+intended behaviour: a template whose tests do not pass does not become an app.
+
+== Step 3: Open your app
+
+Go to `https://tasks.<your-domain>`. Keycloak asks you to sign in, then the app
+loads: a sidebar, a task list, and the theme and language controls in the top
+bar.
+
+Two things to notice, because you did not configure either of them:
+
+* *You were logged in.* The template speaks OAuth2 to the Keycloak client the
+  deployment created for it.
+* *The sidebar says "Tasks", not "Web Application".* The deployment named the app
+  and the app read that name at runtime. See
+  xref:variables.adoc[How configuration reaches your app].
+
+Create a task. It is stored in the PostgreSQL database the deployment created,
+under your user id.
+
+== What you have now
+
+A full-stack application that is *yours*: the code is checked out at
+`~/apps/tasks`, pushed to Gitea, built by the cluster and served on your domain.
+
+Next: xref:develop.adoc[Change the app and ship it].

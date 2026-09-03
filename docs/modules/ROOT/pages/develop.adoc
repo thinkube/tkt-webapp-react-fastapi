@@ -1,0 +1,123 @@
+= Change the app and ship it
+:page-type: how-to
+:page-docref: z3p7
+
+Your app is checked out at `~/apps/<name>`, on the same filesystem code-server
+and Claude use. That checkout is the working copy — there is nothing to clone.
+
+== Ship a change
+
+. Edit the code in `~/apps/<name>`.
+. Run the tests for the container you touched:
++
+[source,bash]
+----
+cd ~/apps/<name>/frontend && ./run_tests.sh
+cd ~/apps/<name>/backend && ./run_tests.sh
+----
++
+Pass a file to run one test and nothing else: `./run_tests.sh src/pages/__tests__/HomePage.test.tsx`.
+. Commit and push to Gitea:
++
+[source,bash]
+----
+git add <paths>
+git commit -m "What changed"
+git push
+----
+. The push triggers the build: tests, images for both architectures, then ArgoCD
+  rolls out the new pods. Watch it in thinkube-control or ask Claude.
+
+A failing test stops the build before anything is deployed.
+
+== Add a page to the frontend
+
+. Create the component under `frontend/src/pages/`.
+. Add its route to `frontend/src/App.tsx`.
+. Add a navigation entry to `navigationItems` and its path to `NAV_ROUTES`, in
+  the same file.
+. Add the labels to all three files in `frontend/src/locales/`.
+
+Build the page from `thinkube-style` components — `TkCard`, `TkButton`,
+`TkTable` — rather than raw HTML, so it matches the rest of the platform.
+
+== Add an endpoint to the backend
+
+. Add the route module under `backend/app/api/`.
+. Include its router in `backend/app/api/router.py`.
+. Add a test under `backend/tests/`.
+
+Endpoints are served under `/api/v1`.
+
+== Change the app's shape
+
+`thinkube.yaml` declares the containers, routes and services. When you change it
+— add a container, a route, a service — the pre-commit hook regenerates the
+`k8s/` manifests into the same commit.
+
+To regenerate without committing:
+
+[source,bash]
+----
+./regenerate-manifests.sh
+----
+
+If the hook is missing after a fresh checkout, run `./install-hooks.sh`.
+
+== Show a variable to the browser
+
+The frontend is a static bundle, so it cannot read the container's environment.
+Name the variable in the container's allow-list instead:
+
+. Add it to `publicEnv` in `thinkube.yaml`:
++
+[source,yaml]
+----
+containers:
+  - name: frontend
+    publicEnv:
+      - APP_TITLE
+      - API_BASE_URL
+----
+. Read it in the frontend, with a fallback for local development:
++
+[source,ts]
+----
+import { publicValue } from '@/lib/publicConfig'
+
+const title = publicValue('APP_TITLE') || t('app.title')
+----
+. Commit and push. The hook regenerates the manifests, and the container
+  publishes the named variables on its next start.
+
+[WARNING]
+====
+`publicEnv` is an allow-list and it is the only thing standing between a variable
+and the public. The container receives the whole environment, including
+`POSTGRES_PASSWORD` and `KEYCLOAK_CLIENT_SECRET`. Name a variable here only when
+it is safe for anyone who opens the application to read it.
+====
+
+See xref:variables.adoc[How configuration reaches your app] for why this is
+shaped as an allow-list.
+
+== Run the frontend locally
+
+[source,bash]
+----
+cd ~/apps/<name>/frontend
+npm install
+npm run dev
+----
+
+The dev server runs on port 3000 and proxies `/api` to `http://localhost:8000`.
+There is no platform locally, so no variable is published and every lookup falls
+back to the default in the code.
+
+== Redeploy without losing your work
+
+Redeploying re-applies the template over your app: the checkout is reset to
+Gitea's `main`, then Copier copies the template over it. Work that is committed
+and pushed survives. Uncommitted work is stashed onto a `local-changes-<date>`
+branch rather than dropped, but the reliable habit is to push before you
+redeploy.

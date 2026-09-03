@@ -1,0 +1,119 @@
+= How configuration reaches your app
+:page-type: concept
+:page-docref: h2v9
+
+An application needs to know things it cannot know when it is written: which
+database, which domain, which model, what it is called. In Thinkube those things
+arrive as *environment variables*, and the repository holds only the declaration
+that they are needed.
+
+That split is what makes the round trip work. Declarations belong to the
+application, so they travel to a published template. Values belong to the
+deployment, so they cannot leak into one.
+
+== Four channels
+
+All four end as environment variables in the container. None requires a
+placeholder in your source.
+
+[cols="1,2,2",options="header"]
+|===
+| Channel | Declared in | Answered by
+
+| Deploy-time parameters | `manifest.yaml` `parameters:` | The person deploying, in the form
+| Application variables | `thinkube.yaml` `spec.env:` | The template's default, or the deployer
+| Service dependencies | `thinkube.yaml` `spec.dependencies:` | The platform, resolving another service's URL
+| Secrets | `manifest.yaml` `secrets:` | The person deploying; never stored in the repository
+|===
+
+A deploy-time parameter is the one to reach for when the answer differs per
+deployment and the deployer knows it. `tkt-stable-diffusion` declares one:
+
+[source,yaml]
+----
+parameters:
+  - name: model_id
+    type: str
+    default: "stabilityai/stable-diffusion-xl-base-1.0"
+    pattern: "^[a-zA-Z0-9-]+/[a-zA-Z0-9._-]+$"
+----
+
+The deployer is asked for `model_id`, with that default and that validation, and
+the container receives `MODEL_ID`. The template carries the question; your
+deployment carries the answer.
+
+The platform adds its own variables on top: `APP_NAME`, `APP_TITLE`, `APP_URL`,
+`API_BASE_URL`, `DOMAIN_NAME`, the `KEYCLOAK_*` set, `DATABASE_URL` and the
+credentials for any service you declared.
+
+== The browser cannot read any of it
+
+A backend reads `os.environ` and it is done. A browser application cannot.
+
+Its bundle is built before the deployment exists, and by the time it runs it is a
+file served by a web server to somebody else's computer. The container's
+environment is on the server; the code is on the client. Nothing carries a value
+across that gap on its own.
+
+`publicEnv` is the bridge, declared per container:
+
+[source,yaml]
+----
+containers:
+  - name: frontend
+    publicEnv:
+      - APP_TITLE
+----
+
+The platform passes those names to the container as `PUBLIC_ENV_VARS`. Before
+nginx starts, `public-config.sh` reads them from the environment and writes them
+into `config.js`, which `index.html` loads before the bundle. The application
+reads them from there:
+
+[source,ts]
+----
+const title = publicValue('APP_TITLE') || t('app.title')
+----
+
+Any variable the container has can be named — one the platform set, one from
+`spec.env`, one wired from a dependency, or a deploy-time parameter. The list
+holds *names*, never values, which is why it is safe for a published template to
+carry it.
+
+== Why an allow-list and not a prefix
+
+An earlier design marked public variables by naming them `PUBLIC_*`. It does not
+work, for a plain reason: the variables a frontend most wants — `APP_TITLE`,
+`API_BASE_URL`, `KEYCLOAK_CLIENT_ID` — are set by the platform and will never
+carry your prefix. A prefix rule needs a second, hardcoded list beside it. A list
+covers both cases with one rule.
+
+[WARNING]
+====
+Every container receives the whole environment, including `POSTGRES_PASSWORD`,
+`KEYCLOAK_CLIENT_SECRET`, `ADMIN_PASSWORD` and `SEAWEEDFS_SECRET_KEY`. A frontend
+that wrote its environment to the page would serve your cluster's database
+password to every visitor.
+
+`publicEnv` is an allow-list for that reason. An absent list publishes nothing,
+so a container that never asks for this is safe by default. Treat a secret named
+in the list as a disclosed secret.
+====
+
+== Choosing where something belongs
+
+[cols="1,2",options="header"]
+|===
+| The value… | Belongs in
+
+| differs per deployment, and the deployer knows it | `manifest.yaml` `parameters:`
+| is part of what the app *is*, with a sensible default | `thinkube.yaml` `spec.env:`
+| is another service's address | `thinkube.yaml` `spec.dependencies:`
+| must never be in the repository | `manifest.yaml` `secrets:`
+| is the app's own behaviour, the same everywhere | plain code — not a variable
+| is read by the browser | any of the above, plus the container's `publicEnv`
+|===
+
+The one case with no good answer is a value a *user* of the running app changes,
+such as a setting on a preferences page. That is application data. It belongs in
+the database, served by the backend, not in the environment.
