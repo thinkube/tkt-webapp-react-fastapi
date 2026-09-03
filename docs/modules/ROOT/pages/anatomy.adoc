@@ -15,7 +15,7 @@ sign-in, three languages, and tests on both sides.
 | `thinkube.yaml` | What the application is: containers, tests, routes, services, `publicEnv`.
 | `backend/` | FastAPI application, Alembic migrations, pytest suite.
 | `frontend/` | React application, Vitest suite, nginx config, container entrypoint.
-| `docs/` | These pages, aggregated into the Thinkube documentation at build time.
+| `docs/` | Two things. `antora.yml` and `modules/` are these pages, aggregated into the Thinkube documentation at build time. `index.html` and `deploy.html` are the template's own deploy page, served by GitHub Pages.
 | `k8s/` | Generated at deploy time. Not in the template; not published back.
 |===
 

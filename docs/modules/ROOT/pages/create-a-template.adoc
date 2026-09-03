@@ -19,6 +19,18 @@ one by hand. The first is the normal one.
 Nothing is transformed on the way out, because nothing was substituted on the way
 in.
 
+=== Give it a deploy page
+
+`docs/` carries `index.html` and `deploy.html`, and they travel with your
+template. Switch on GitHub Pages for the new repository — source: branch `main`,
+folder `/docs` — and the template gains its own deploy page at
+`https://<org>.github.io/<repo>/deploy.html`.
+
+Edit `templateUrl` in `deploy.html` to your repository, and the template card
+above the form to describe it. Anyone with a Thinkube cluster can then deploy it
+from the page, on their own platform. See
+xref:deploy.adoc[Deploy this template] for what the reader sees.
+
 === What is left behind
 
 These are dropped when your app is published:

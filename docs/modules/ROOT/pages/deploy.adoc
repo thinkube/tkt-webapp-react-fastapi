@@ -8,7 +8,12 @@ most of which is the build. You need a Thinkube cluster and an account on it.
 
 == Step 1: Deploy the template
 
-Ask Claude from code-server:
+There are three ways in. They all reach the same place — thinkube-control
+deploying the same template — so pick the one that matches where you are.
+
+=== Ask Claude
+
+From code-server, in words:
 
 [source,text]
 ----
@@ -16,13 +21,42 @@ Deploy the template https://github.com/thinkube/tkt-webapp-react-fastapi
 and call it tasks
 ----
 
+Claude calls the `deploy_template` MCP tool, and you can keep asking it for the
+status as the build runs. This is the usual way to drive the platform.
+
+=== Use the control panel
+
+Open thinkube-control and go to *Templates*. The page lists every template in the
+catalog. Choose one, give it a name, answer any parameters it declares, and
+deploy. Use this when you want to see what is available rather than name a URL.
+
+=== Start from the template's own page
+
+Every published template can carry a deploy page, served by GitHub Pages from its
+`docs/` folder. This template's is at
+https://thinkube.github.io/tkt-webapp-react-fastapi/deploy.html[thinkube.github.io/tkt-webapp-react-fastapi/deploy.html].
+
+Type your Thinkube domain and it sends you to
+`https://control.<your-domain>/templates?deploy=<template-url>`, where the
+*Templates* page opens with that template already loaded and waiting for a name.
+Your domain is remembered in the browser for next time.
+
+This is the route for someone who found the template on GitHub and has a cluster
+of their own — the template advertises itself, and the deploy happens on the
+reader's platform, not yours.
+
+[NOTE]
+====
+The deploy page only exists if GitHub Pages is switched on for the repository,
+with the source set to branch `main`, folder `/docs`. A template published from
+your own app carries the page's files, but you enable Pages yourself.
+====
+
+=== Whichever route you took
+
 The name you choose is the application's identity everywhere: its namespace, its
-database, its Keycloak client, and its address.
-
-You can do the same from thinkube-control's *Templates* page, which lists every
-template in the catalog and asks for the name in a form.
-
-Either way the deployment starts in the background and returns an id.
+database, its Keycloak client, and its address. The deployment then starts in the
+background and returns an id.
 
 == Step 2: Watch the platform assemble the app
 
