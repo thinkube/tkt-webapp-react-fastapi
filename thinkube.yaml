@@ -25,6 +25,8 @@ spec:
       port: 80
       size: small
       health: /health
+      publicEnv:
+        - APP_TITLE
       test:
         enabled: true
         # node-base carries git, which npm needs to install thinkube-style

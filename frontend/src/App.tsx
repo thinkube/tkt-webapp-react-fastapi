@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { TkAppLayout, type TkNavItem } from 'thinkube-style';
@@ -8,6 +9,7 @@ import { UserMenu } from '@/components/UserMenu';
 import HomePage from '@/pages/HomePage';
 import ApiTokensPage from '@/pages/ApiTokensPage';
 import NotFoundPage from '@/pages/NotFoundPage';
+import { publicValue } from '@/lib/publicConfig';
 
 /** Route each navigation item points at, keyed by its id. */
 const NAV_ROUTES: Record<string, string> = {
@@ -42,6 +44,14 @@ export default function App() {
   const activeItem = location.pathname.startsWith('/tokens') ? 'api-tokens' : 'tasks';
   const pageTitle = activeItem === 'api-tokens' ? t('apiTokens.title') : t('nav.home');
 
+  // The deployment names the application; the translated default is what a
+  // developer sees running it locally.
+  const appTitle = publicValue('APP_TITLE') || t('app.title');
+
+  useEffect(() => {
+    document.title = appTitle;
+  }, [appTitle]);
+
   return (
     <TkAppLayout
       navigationItems={navigationItems}
@@ -50,7 +60,7 @@ export default function App() {
         const path = NAV_ROUTES[id];
         if (path) navigate(path);
       }}
-      logoText={t('app.title')}
+      logoText={appTitle}
       topBarTitle={pageTitle}
       topBarContent={
         <div className="flex items-center gap-2">

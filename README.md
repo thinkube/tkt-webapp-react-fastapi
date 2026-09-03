@@ -53,6 +53,42 @@ The script builds the test environment in one place: the settings in `.env.test`
 
 Frontend tests use Vitest and React Testing Library.
 
+## Variables the browser can read
+
+The frontend is a static bundle, built before the deployment exists, so it
+cannot read the container's environment the way the backend does. `thinkube.yaml`
+names the variables it may show instead:
+
+```yaml
+containers:
+  - name: frontend
+    publicEnv:
+      - APP_TITLE
+```
+
+The platform passes those names to the container as `PUBLIC_ENV_VARS`.
+`frontend/public-config.sh` runs before nginx starts, writes the named variables
+into `config.js`, and `index.html` loads it before the bundle. Read one with:
+
+```ts
+import { publicValue } from '@/lib/publicConfig'
+
+const title = publicValue('APP_TITLE') || t('app.title')
+```
+
+Any variable the container has can be named: one the platform sets, one from
+`spec.env`, one wired from `dependencies`, or a parameter answered at deploy
+time. The list holds names, never values — so the values belong to the
+deployment, and a template published from this app carries neither.
+
+**This is an allow-list, and it is the only thing standing between a variable
+and the public.** The container receives the whole environment, including
+`POSTGRES_PASSWORD` and `KEYCLOAK_CLIENT_SECRET`. Name a variable here only when
+it is safe for anyone who opens the application to read it.
+
+Locally there is no platform, so `frontend/public/config.js` publishes nothing
+and every lookup falls back to the default in the code.
+
 ## Adding a page
 
 1. Create the component under `frontend/src/pages/`.

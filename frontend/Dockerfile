@@ -14,5 +14,10 @@ ARG CONTAINER_REGISTRY
 FROM ${CONTAINER_REGISTRY}/library/nginx:stable-alpine AS runtime-stage
 COPY --from=build-stage /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# nginx runs this before it starts, rewriting config.js from the environment
+COPY public-config.sh /docker-entrypoint.d/40-public-config.sh
+RUN chmod +x /docker-entrypoint.d/40-public-config.sh
+
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
