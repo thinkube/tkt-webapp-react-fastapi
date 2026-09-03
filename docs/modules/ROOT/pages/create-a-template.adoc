@@ -98,7 +98,7 @@ spec:
     - database
 ----
 
-The full field list is in the xref:thinkube-docs:reference/thinkube-yaml.adoc[thinkube.yaml reference].
+The full field list is in the xref:thinkube-docs:ROOT:reference/thinkube-yaml.adoc[thinkube.yaml reference].
 
 Then:
 
