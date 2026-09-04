@@ -55,7 +55,11 @@ Thumbs.db
 .cache/
 
 # Package lock files (regenerated during builds)
-package-lock.json
+# package-lock.json is KEPT: this is an application, not a library. The
+# lock is what makes an install reproducible — the same tree in the
+# pipeline, in a worker's tree and on a person's machine — and it is what
+# lets `npm ci` skip the resolver, which on npm 10.9 crashes outright
+# resolving this frontend's peer graph from nothing.
 
 # GitOps helper scripts (added by deployment)
 DEVELOPMENT.md
