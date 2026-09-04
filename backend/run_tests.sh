@@ -17,6 +17,11 @@ if [ -f .env.test ]; then
     set +a
 fi
 
+# The store this app's tests own. The platform names it after the app, so
+# two apps never write into each other's rows; the file's own value is the
+# fallback for a run outside the platform.
+export DATABASE_NAME="${TEST_DATABASE_NAME:-${DATABASE_NAME}}"
+
 # Set PostgreSQL credentials from environment
 export POSTGRES_PASSWORD="${ADMIN_PASSWORD}"
 export POSTGRES_USER="${ADMIN_USERNAME}"
