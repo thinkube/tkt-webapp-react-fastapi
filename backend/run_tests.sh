@@ -1,7 +1,7 @@
 #!/bin/sh
 # run_tests.sh - Run the backend tests.
 #
-#   ./run_tests.sh              the whole suite, with coverage and lint (CI)
+#   ./run_tests.sh              the whole suite (CI)
 #   ./run_tests.sh <file>       one test file, and nothing else
 #
 # Both run with the same environment, built here and nowhere else: the
@@ -37,14 +37,15 @@ echo "Database URL configured for user ${DATABASE_USER} at host: ${DATABASE_HOST
 echo "Installing dependencies..."
 pip install --break-system-packages -r requirements.txt
 
-# Run tests with coverage
-pytest tests/ -v --cov=app --cov-report=term-missing --cov-report=html
+# The tests, and nothing else.
+#
+# A linter and a formatter are things a person runs while writing; on a
+# deploy they print pages of "would reformat" that never fail anything
+# and never get read. Run them yourself:
+#   flake8 app/ --max-line-length=120 --exclude=__pycache__
+#   black app/
+pytest tests/ -v
 
-# Run code quality checks (optional - don't fail the build)
-echo -e "\nRunning code quality checks..."
-flake8 app/ --max-line-length=120 --exclude=__pycache__ || echo "Linting issues found (non-blocking)"
-black --check app/ || echo "Formatting issues found (non-blocking)"
-
-echo -e "\nAll tests and checks passed!"
+echo -e "\nAll tests passed!"
 
 # 🤖 Generated with Claude

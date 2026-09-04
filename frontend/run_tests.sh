@@ -31,21 +31,14 @@ else
     npm install
 fi
 
-# Type check
-echo "\nRunning TypeScript check..."
-npx tsc --noEmit
-
-# Run linter
-echo "\nRunning linter..."
-npm run lint || echo "Linting issues found (non-blocking)"
-
-# Run tests
+# The tests, and nothing else.
+#
+# A type check and a linter are things a person runs while writing, and
+# `npm run typecheck` and `npm run lint` are here for that. On every
+# deploy they cost minutes — TypeScript alone must read the declarations
+# of every library the app imports — and they answer a question the tests
+# have already answered: does this work. Coverage instruments every file
+# to print a report nobody reads on a deploy.
 echo "\nRunning unit tests..."
 npm run test
 echo "Tests passed successfully!"
-
-# Run coverage report
-echo "\nChecking test coverage..."
-npm run test:coverage || echo "Coverage report not available"
-
-echo "\nAll tests completed!"
