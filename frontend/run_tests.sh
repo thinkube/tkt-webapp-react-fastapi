@@ -15,19 +15,20 @@ fi
 
 echo "Running frontend tests..."
 
-# Install dependencies if needed. The cache lives beside the workspace in
-# CI and in the user's own home anywhere else, so this script runs the same
-# on a developer's machine as it does in the pipeline.
-CACHE_ARGS=""
-if [ -w /workspace ] || mkdir -p /workspace/.cache/npm 2>/dev/null; then
-    CACHE_ARGS="--cache /workspace/.cache/npm"
-fi
+# Install dependencies if needed.
+#
+# The cache belongs to the machine running the install, never to the
+# repository: a cache under the shared checkout is written by every node
+# that ever tested this app — on this platform that means both amd64 and
+# arm64 — and npm reads it back as a corrupt tree ("Cannot read properties
+# of null (reading 'edgesOut')"). npm's own default, or npm_config_cache
+# from the environment, is where it goes.
 if [ -f package-lock.json ]; then
     echo "Installing dependencies with npm ci..."
-    npm ci $CACHE_ARGS
+    npm ci
 else
     echo "Installing dependencies with npm install..."
-    npm install $CACHE_ARGS
+    npm install
 fi
 
 # Type check
