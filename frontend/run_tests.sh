@@ -15,13 +15,19 @@ fi
 
 echo "Running frontend tests..."
 
-# Install dependencies if needed
+# Install dependencies if needed. The cache lives beside the workspace in
+# CI and in the user's own home anywhere else, so this script runs the same
+# on a developer's machine as it does in the pipeline.
+CACHE_ARGS=""
+if [ -w /workspace ] || mkdir -p /workspace/.cache/npm 2>/dev/null; then
+    CACHE_ARGS="--cache /workspace/.cache/npm"
+fi
 if [ -f package-lock.json ]; then
     echo "Installing dependencies with npm ci..."
-    npm ci --cache /workspace/.cache/npm
+    npm ci $CACHE_ARGS
 else
     echo "Installing dependencies with npm install..."
-    npm install --cache /workspace/.cache/npm
+    npm install $CACHE_ARGS
 fi
 
 # Type check
