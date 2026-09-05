@@ -1,0 +1,20 @@
+# What Copier hands a generated application, and what it keeps back.
+#
+# Copier copies everything by default, so an app made from this template
+# was given the template's OWN documentation — pages about deploying
+# templates and turning an app into one — as if they described the app.
+# Tandem then found their Antora marker and pointed the app's own
+# documentation promise inside them.
+#
+# The list below is Copier's own default, plus this template's pages. A
+# file named here stays in the template; everything else is the app's.
+_exclude:
+  - copier.yml
+  - copier.yaml
+  - ~*
+  - "*.py[co]"
+  - __pycache__
+  - .git
+  - .DS_Store
+  - .svn
+  - template-docs
