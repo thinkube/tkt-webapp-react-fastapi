@@ -1,6 +1,5 @@
 = How configuration reaches your app
 :page-type: concept
-:page-docref: h2v9
 
 An application needs to know things it cannot know when it is written: which
 database, which domain, which model, what it is called. In Thinkube those things

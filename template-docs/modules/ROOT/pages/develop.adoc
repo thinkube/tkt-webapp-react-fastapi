@@ -1,6 +1,5 @@
 = Change the app and ship it
 :page-type: how-to
-:page-docref: z3p7
 
 Your app is checked out at `~/apps/<name>`, on the same filesystem code-server
 and Claude use. That checkout is the working copy — there is nothing to clone.

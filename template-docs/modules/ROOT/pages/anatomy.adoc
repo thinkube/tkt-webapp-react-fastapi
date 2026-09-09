@@ -1,6 +1,5 @@
 = What is in this template
 :page-type: reference
-:page-docref: k7t4
 
 A full-stack task manager: React frontend, FastAPI backend, PostgreSQL, Keycloak
 sign-in, three languages, and tests on both sides.

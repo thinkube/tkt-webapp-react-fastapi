@@ -1,6 +1,5 @@
 = Turn your app into a template
 :page-type: how-to
-:page-docref: b6n1
 
 There are two ways to get a template. Publish an app that already works, or write
 one by hand. The first is the normal one.

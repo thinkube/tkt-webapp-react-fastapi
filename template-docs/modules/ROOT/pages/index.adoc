@@ -1,6 +1,5 @@
 = The template round trip
 :page-type: concept
-:page-docref: q4m2
 
 A Thinkube template is an ordinary application repository. Not a scaffold, not a
 generator, not a file tree full of placeholders — an application that runs. You

@@ -1,6 +1,5 @@
 = Deploy this template — a running task app of your own
 :page-type: tutorial
-:page-docref: w8k5
 
 You will turn this template into a running application on your cluster, with its
 own database, its own login, and its own address. It takes about five minutes,
