@@ -2,8 +2,8 @@
 :page-type: tutorial
 
 You will turn this template into a running application on your cluster, with its
-own database, its own login, and its own address. It takes about five minutes,
-most of which is the build. You need a Thinkube cluster and an account on it.
+own database, its own login, and its own address. Most of the wait is the build.
+You need a Thinkube cluster and an account on it.
 
 == Step 1: Deploy the template
 
@@ -31,9 +31,10 @@ deploy. Use this when you want to see what is available rather than name a URL.
 
 === Start from the template's own page
 
-Every published template can carry a deploy page, served by GitHub Pages from its
-`docs/` folder. This template's is at
-https://thinkube.github.io/tkt-webapp-react-fastapi/deploy.html[thinkube.github.io/tkt-webapp-react-fastapi/deploy.html].
+A template can carry a deploy page of its own. This template's is served by
+GitHub Pages at
+https://thinkube.github.io/tkt-webapp-react-fastapi/deploy.html[thinkube.github.io/tkt-webapp-react-fastapi/deploy.html];
+its source is `deploy.html` in `template-docs/`.
 
 Type your Thinkube domain and it sends you to
 `https://control.<your-domain>/templates?deploy=<template-url>`, where the
@@ -46,9 +47,10 @@ reader's platform, not yours.
 
 [NOTE]
 ====
-The deploy page only exists if GitHub Pages is switched on for the repository,
-with the source set to branch `main`, folder `/docs`. A template published from
-your own app carries the page's files, but you enable Pages yourself.
+GitHub Pages publishes a repository's root or its `docs/` folder. To give a
+template of your own a deploy page, copy `index.html` and `deploy.html` from this
+template's `template-docs/` into `docs/` in your repository, edit the template
+URL in `deploy.html`, and switch Pages on for branch `main`, folder `/docs`.
 ====
 
 === Whichever route you took
@@ -59,8 +61,8 @@ background and returns an id.
 
 == Step 2: Watch the platform assemble the app
 
-Ask Claude for the deployment status, or watch the *Deployments* view. The phases
-run in order:
+Ask Claude for the deployment status, or watch the deployment's progress on the
+*Templates* page. The phases run in order:
 
 . *Setup and Copier* — the template is copied to `~/apps/tasks`. Nothing is
   rendered; see xref:index.adoc[The template round trip].

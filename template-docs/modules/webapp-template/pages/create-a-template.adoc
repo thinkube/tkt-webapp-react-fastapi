@@ -20,15 +20,15 @@ in.
 
 === Give it a deploy page
 
-`docs/` carries `index.html` and `deploy.html`, and they travel with your
-template. Switch on GitHub Pages for the new repository — source: branch `main`,
-folder `/docs` — and the template gains its own deploy page at
-`https://<org>.github.io/<repo>/deploy.html`.
-
-Edit `templateUrl` in `deploy.html` to your repository, and the template card
-above the form to describe it. Anyone with a Thinkube cluster can then deploy it
-from the page, on their own platform. See
-xref:deploy.adoc[Deploy this template] for what the reader sees.
+This template's `template-docs/` holds `index.html` and `deploy.html`, the
+deploy page you saw on xref:deploy.adoc[Deploy this template]. Copier does not
+copy `template-docs/` into an app, so a template published from your app does
+not carry them. To give your template a deploy page, copy the two files into
+`docs/` in the new repository, edit `templateUrl` in `deploy.html` to your
+repository and the template card above the form to describe it, and switch on
+GitHub Pages — source: branch `main`, folder `/docs`. The page is then at
+`https://<org>.github.io/<repo>/deploy.html`, and anyone with a Thinkube
+cluster can deploy your template from it, on their own platform.
 
 === What is left behind
 
