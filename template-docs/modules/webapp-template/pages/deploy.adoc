@@ -1,6 +1,9 @@
 = Deploy this template — a running task app of your own
 :page-type: tutorial
 
+.TL;DR
+Ask Claude: "deploy the template https://github.com/thinkube/tkt-webapp-react-fastapi and call it tasks". Claude calls `deploy_template` and follows the status; when it reports `running`, open `tasks.<your domain>` and sign in. The steps below show what the platform assembled on the way.
+
 You will turn this template into a running application on your cluster, with its
 own database, its own login, and its own address. Most of the wait is the build.
 You need a Thinkube cluster and an account on it.

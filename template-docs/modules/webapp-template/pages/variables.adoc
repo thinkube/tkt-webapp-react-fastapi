@@ -1,6 +1,9 @@
 = How configuration reaches your app
 :page-type: concept
 
+.TL;DR
+What your app needs to know at run time, the database, the domain, the model, its own name, arrives as environment variables when it is deployed. The repository only declares that they are needed, so it can be published as a template without carrying anyone's values.
+
 An application needs to know things it cannot know when it is written: which
 database, which domain, which model, what it is called. In Thinkube those things
 arrive as *environment variables*, and the repository holds only the declaration

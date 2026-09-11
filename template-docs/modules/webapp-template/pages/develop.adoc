@@ -1,6 +1,9 @@
 = Change the app and ship it
 :page-type: how-to
 
+.TL;DR
+Edit the checkout at `~/apps/<name>` in Thinkube IDE, or ask Claude to make the change there, then commit and push. The push builds and deploys; "is <name> up?" follows it. Nothing to clone, nothing to configure.
+
 Your app is checked out at `~/apps/<name>`, on the same filesystem Thinkube IDE
 and Claude use. That checkout is the working copy — there is nothing to clone.
 

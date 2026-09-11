@@ -1,6 +1,9 @@
 = What is in this template
 :page-type: reference
 
+.TL;DR
+A working task manager: React frontend, FastAPI backend, PostgreSQL, sign-in through Thinkube Identity, three languages, tests on both sides. Read this when you want to know what a file is for; ask Claude about any of them by name.
+
 A full-stack task manager: React frontend, FastAPI backend, PostgreSQL, Keycloak
 sign-in, three languages, and tests on both sides.
 

@@ -1,6 +1,9 @@
 = Turn your app into a template
 :page-type: how-to
 
+.TL;DR
+Get the app working and pushed, then in thinkube-control open *Templates* and choose *Publish as Template* on it: name, description, tags, private or not, publish. The platform creates the GitHub repository, pushes the code without the generated `k8s/`, and the template appears in the catalogue for the next "make an app from …".
+
 There are two ways to get a template. Publish an app that already works, or write
 one by hand. The first is the normal one.
 
