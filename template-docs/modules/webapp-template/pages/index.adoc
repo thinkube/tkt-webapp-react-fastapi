@@ -1,17 +1,16 @@
 = The template round trip
 :page-type: concept
 
+_A template is a running application you copy, change and can publish back. Why it is built that way, and what follows from it._
+
+.TL;DR
+Ask Claude: "make an app called notes from the web app template". You get a repository of your own, built, deployed and behind your login. Change it and push; it ships. When it is worth sharing, publish it and it is a template again. Nothing is rendered on the way in or out: every arrow is a copy.
+
 A Thinkube template is an ordinary application repository. Not a scaffold, not a
 generator, not a file tree full of placeholders — an application that runs. You
 deploy it and get your own copy. You change your copy until it does something
 useful. Then you publish it back, and it is a template again.
 
-[NOTE]
-====
-This page's source lives in the *tkt-webapp-react-fastapi* repository, beside the
-code it documents. Antora aggregates it into the Thinkube documentation at build
-time.
-====
 
 == Four movements, one shape
 

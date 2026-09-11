@@ -12,7 +12,7 @@ deploying the same template — so pick the one that matches where you are.
 
 === Ask Claude
 
-From code-server, in words:
+In Thinkube IDE, in words:
 
 [source,text]
 ----

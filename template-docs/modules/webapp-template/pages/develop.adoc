@@ -1,7 +1,7 @@
 = Change the app and ship it
 :page-type: how-to
 
-Your app is checked out at `~/apps/<name>`, on the same filesystem code-server
+Your app is checked out at `~/apps/<name>`, on the same filesystem Thinkube IDE
 and Claude use. That checkout is the working copy — there is nothing to clone.
 
 == Ship a change
