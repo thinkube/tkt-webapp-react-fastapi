@@ -25,7 +25,7 @@ placeholder in your source.
 | Deploy-time parameters | `manifest.yaml` `parameters:` | The person deploying, in the form
 | Application variables | `thinkube.yaml` `spec.env:` | The template's default, or the deployer
 | Service dependencies | `thinkube.yaml` `spec.dependencies:` | The platform, resolving another service's URL
-| Secrets | `manifest.yaml` `secrets:` | The person deploying; never stored in the repository
+| Secrets | `manifest.yaml` `secrets:` | The Secrets page in thinkube-control; the value never enters the repository or its git history
 |===
 
 A deploy-time parameter is the one to reach for when the answer differs per
@@ -47,6 +47,33 @@ deployment carries the answer.
 The platform adds its own variables on top: `APP_NAME`, `APP_TITLE`, `APP_URL`,
 `API_BASE_URL`, `DOMAIN_NAME`, the `KEYCLOAK_*` set, `DATABASE_URL` and the
 credentials for any service you declared.
+
+== Secrets
+
+A token or API key is declared by name in `manifest.yaml`, and its value lives only in the Secrets page of thinkube-control:
+
+[source,yaml]
+----
+secrets:
+  - name: HF_TOKEN
+    description: Hugging Face token for gated models
+    required: false
+----
+
+The name is the variable the containers receive. `required` defaults to `true`.
+
+When the app is deployed, or when a commit changes `thinkube.yaml` or `manifest.yaml`, the platform builds one Kubernetes Secret, `<app>-secrets`, in the app's namespace. It holds the declared names the Secrets page has, and no others, however many secrets the page holds. Every container reads it through `envFrom`, so each value arrives under its own name. The Secret is written through the Kubernetes API; `k8s/` only names it, so no value reaches the repository.
+
+A required secret the Secrets page does not have stops the deploy, and a commit that would need it:
+
+----
+Secret 'SECRETS_CHECK_TOKEN' is required by secrets-check and is not in the Secrets store
+Add it on the Secrets page: https://control.thinkube.com/secrets
+----
+
+An optional secret the page does not have sets no variable.
+
+The Secrets page lists the apps that use each secret. Changing a value there writes it into the Secret of every app that uses it and restarts those apps, so their containers read the new value.
 
 == The browser cannot read any of it
 
@@ -99,7 +126,8 @@ password to every visitor.
 
 `publicEnv` is an allow-list for that reason. An absent list publishes nothing,
 so a container that never asks for this is safe by default. Treat a secret named
-in the list as a disclosed secret.
+in the list as a disclosed secret. A name declared under `secrets:` in
+`manifest.yaml` cannot be listed at all: the deploy refuses it.
 ====
 
 == Choosing where something belongs
