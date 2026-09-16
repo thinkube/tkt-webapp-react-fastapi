@@ -1,0 +1,150 @@
+= Pass configuration to your app
+:page-type: playbook
+:page-area: gitops
+:page-tagline: Values your app reads at run time, and the few the browser may see
+:page-difficulty: beginner
+:page-time: 5 min
+:page-risk: low
+:page-tags: Web app, Configuration, Environment variables
+:page-order: 30
+:page-updated: 2026-09-16
+
+== Overview
+
+=== Basic idea
+
+An app needs values it cannot know when it is written: the address it runs at, its database, a support email. Cloud platforms pass them as environment variables, set per deployment, so the same code runs anywhere and the values never enter the repository.
+
+Thinkube does the same. The platform sets the variables it knows, such as the app's name, address and database, and you declare your own in `thinkube.yaml` with a default.
+
+* *Declared in the repository, valued at deploy.* The file says a variable exists; the deployment gives it a value.
+* *The browser sees only what you list.* A frontend runs on the visitor's computer, so it can read only the variables named in its `publicEnv`.
+
+=== What you'll accomplish
+
+You add a variable, `SUPPORT_EMAIL`, to the `notes` app, let the browser read it, push, and find it in the backend and in the page's configuration.
+
+=== What to know before starting
+
+*Required*
+
+* An app from the web app template. xref:build-a-web-app.adoc[Build a web app from the template] makes `notes`.
+
+*Optional*
+
+* xref:variables.adoc[How configuration reaches your app]: every channel, secrets included, and why `publicEnv` is an allow-list.
+* xref:ROOT:reference/thinkube-yaml.adoc#_spec_env[thinkube.yaml: spec.env].
+
+=== Supported hardware
+
+[cols="1,1,1,2",options="header"]
+|===
+| Node | Architecture | GPU | On the reference run
+
+| tkamd1 | amd64 | none | —
+| tkamd2 | amd64 | 2 × RTX 3090 | —
+| tkspark | arm64 | GB10 | —
+|===
+
+The app needs no GPU.
+
+=== Prerequisites
+
+*Platform*
+
+* Thinkube IDE open, with `~/apps/notes` in the workspace.
+
+*Components*
+
+* None.
+
+=== Time & risk
+
+* *Estimated time:* 5 min. The variable was live 171 seconds after the push.
+* *Risk level:* Low. A variable named in `publicEnv` is readable by anyone who opens the app; name only values that are safe to show.
+* *Rollback:* Remove the variable from `thinkube.yaml`, commit and push.
+* *Last updated:* 2026-09-16. Measured on one change.
+
+== Instructions
+
+=== Step 1. See what the page already reads
+
+The template's frontend reads the app's name from the deployment, which is why the sidebar says *Notes*.
+
+Ask Claude:
+
+----
+› show me notes' config.js
+----
+
+Expected output:
+
+----
+window.__PUBLIC_CONFIG__ = {"APP_TITLE":"Notes"};
+----
+
+=== Step 2. Declare the variable
+
+Ask Claude:
+
+----
+› add SUPPORT_EMAIL to notes, default help@example.com, readable by the browser, then commit and push
+----
+
+Claude adds the variable under `env` and names it in the frontend's `publicEnv` in `apps/notes/thinkube.yaml`:
+
+[source,yaml]
+----
+  containers:
+    - name: frontend
+      publicEnv:
+        - APP_TITLE
+        - SUPPORT_EMAIL
+
+  env:
+    - name: SUPPORT_EMAIL
+      description: "Where the app's users write for help"
+      default: "help@example.com"
+----
+
+The commit regenerates the app's Kubernetes files:
+
+----
+Pre-commit hook: thinkube.yaml or manifest.yaml changed, regenerating k8s/ manifests...
+k8s/ manifests regenerated and staged for commit.
+----
+
+The push rebuilds and redeploys the app.
+
+=== Step 3. Find it in the backend and the page
+
+Ask Claude:
+
+----
+› when notes is redeployed, show SUPPORT_EMAIL in the backend and in config.js
+----
+
+Expected output, 171 seconds after the push on the reference run:
+
+----
+backend SUPPORT_EMAIL=help@example.com
+window.__PUBLIC_CONFIG__ = {"APP_TITLE":"Notes","SUPPORT_EMAIL":"help@example.com"};
+----
+
+Every container receives `SUPPORT_EMAIL`. The page receives only the two names in `publicEnv`; the database password and the other secrets the containers hold stay on the server. The frontend reads a value with `publicValue('SUPPORT_EMAIL')` from `src/lib/publicConfig.ts`.
+
+=== Step 4. Next steps
+
+* xref:variables.adoc[How configuration reaches your app]: deploy-time questions, dependencies on other services, and secrets.
+* xref:create-a-template.adoc[Turn your app into a template]: the declaration travels with the template, the value does not.
+
+== Troubleshooting
+
+[cols="1,1,2",options="header"]
+|===
+| Symptom | Cause | Fix
+
+| `git push` is rejected with `! [rejected] main -> main (non-fast-forward)`
+| After every deploy the build commits the new image tag to the repository, so your checkout is one commit behind
+| Run `git pull --rebase`, then `git push` again.
+|===
