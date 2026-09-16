@@ -136,7 +136,7 @@ Every container receives `SUPPORT_EMAIL`. The page receives only the two names i
 === Step 4. Next steps
 
 * xref:variables.adoc[How configuration reaches your app]: deploy-time questions, dependencies on other services, and secrets.
-* xref:create-a-template.adoc[Turn your app into a template]: the declaration travels with the template, the value does not.
+* xref:publish-your-app-as-a-template.adoc[Publish your app as a template]: the declaration travels with the template, the value does not.
 
 == Troubleshooting
 

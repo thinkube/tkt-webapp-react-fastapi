@@ -157,7 +157,7 @@ Without a token it answers `{"detail":"Not authenticated"}`, as every endpoint o
 === Step 5. Next steps
 
 * xref:configure-your-app.adoc[Pass configuration to your app]: values the app reads at run time, and the ones the browser may see.
-* xref:create-a-template.adoc[Turn your app into a template]: publish your version for others.
+* xref:publish-your-app-as-a-template.adoc[Publish your app as a template]: publish your version for others.
 
 == Troubleshooting
 

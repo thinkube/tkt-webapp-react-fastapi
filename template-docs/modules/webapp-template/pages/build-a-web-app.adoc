@@ -137,7 +137,7 @@ Expected output, from the reference run:
 
 * xref:change-your-app.adoc[Change your app and ship it]: add an endpoint, test it and push it live.
 * xref:ROOT:playbooks/run-a-pipeline-from-your-app.adoc[Run a pipeline from your app]: long jobs your app submits.
-* xref:create-a-template.adoc[Turn your app into a template]: publish it for others.
+* xref:publish-your-app-as-a-template.adoc[Publish your app as a template]: publish it for others.
 
 == Troubleshooting
 

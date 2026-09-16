@@ -1,0 +1,179 @@
+= Publish your app as a template
+:page-type: playbook
+:page-area: gitops
+:page-tagline: Turn an app you improved into a template anyone on your cluster can deploy
+:page-difficulty: beginner
+:page-time: 5 min
+:page-risk: low
+:page-tags: Web app, Templates, GitHub
+:page-order: 40
+:page-updated: 2026-09-16
+:page-aliases: create-a-template.adoc
+
+== Overview
+
+=== Basic idea
+
+A team's best starting point is an app that already works. Publishing it as a template lets the next app start from there instead of from scratch: same structure, same tests, same configuration declarations, already proven on the platform.
+
+In Thinkube a template is an ordinary app repository, so publishing is a copy.
+
+* *Your code goes to your GitHub account.* The platform creates the repository, public or private, and pushes the app's files.
+* *The catalogue learns about it.* The template is added to `<your account>-metadata`, the list thinkube-control reads, so it appears under *Templates*.
+* *Declarations travel, values stay.* The parameters, variables and `publicEnv` names in `thinkube.yaml` go with the template; each deployment gives them its own values.
+
+=== What you'll accomplish
+
+You publish the `notes` app, with the task count and the support email added in the earlier playbooks, as the private template `tkt-notes`. Then you deploy it as a new app, `notes-copy`, and find both changes there.
+
+=== What to know before starting
+
+*Required*
+
+* An app from the web app template, changed and pushed. xref:build-a-web-app.adoc[Build a web app from the template], xref:change-your-app.adoc[Change your app and ship it] and xref:configure-your-app.adoc[Pass configuration to your app] make the `notes` used here.
+
+*Optional*
+
+* xref:index.adoc[The template round trip]: why a template carries no placeholders.
+* xref:anatomy.adoc#_write_a_template_by_hand[Write a template by hand].
+
+=== Supported hardware
+
+[cols="1,1,1,2",options="header"]
+|===
+| Node | Architecture | GPU | On the reference run
+
+| tkamd1 | amd64 | none | thinkube-control, where the publish ran
+| tkamd2 | amd64 | 2 × RTX 3090 | —
+| tkspark | arm64 | GB10 | —
+|===
+
+The app needs no GPU.
+
+=== Prerequisites
+
+*Platform*
+
+* The GitHub token given at install. Publishing uses it to create repositories in its owner's account.
+
+*Components*
+
+* None.
+
+=== Time & risk
+
+* *Estimated time:* 5 min. The publish took 22 seconds; the deployment from the published template took 227 seconds.
+* *Risk level:* Low. Publishing only reads the app. Publishing again under the same template name replaces that repository's contents and history with the app as it is now.
+* *Rollback:* Delete the template repository on GitHub and its entry in `repositories.json` of `<your account>-metadata`.
+* *Last updated:* 2026-09-16. Measured on one publish and one deployment.
+
+== Instructions
+
+=== Step 1. Check the app is ready to share
+
+Everything in `~/apps/notes` is published, uncommitted files included. A name or address typed into the source travels with it, so look for your app's own identity before you publish.
+
+Ask Claude:
+
+----
+› check notes for uncommitted changes and for its name typed into the source instead of read from a variable
+----
+
+On the reference run the checkout was clean. The name `notes` appeared only in the pre-commit hook and `regenerate-manifests.sh`, which each deployment writes for its own app and which are not published.
+
+=== Step 2. Publish
+
+In thinkube-control, open *Templates*. Under *Your Apps*, choose *Publish as Template* on `notes`, and fill in the form:
+
+* *Template Name*: `tkt-notes`. This is the GitHub repository name.
+* *Description*: one line for the catalogue.
+* *Tags*: `webapp, notes`.
+* *Private repository*: on, the default. Leave it on unless the code may be public.
+
+image::publish-dialog.png[The Publish as Template form filled in for notes]
+
+Choose *Publish*.
+
+Expected output, 22 seconds later on the reference run:
+
+image::publish-result.png[The form reports: Published 'notes' as template 'tkt-notes', with a View on GitHub link]
+
+These are left out of the published repository, because each deployment makes its own:
+
+[cols="1,2",options="header"]
+|===
+| Left out | Why
+
+| `k8s/` | Generated from `thinkube.yaml` for one cluster.
+| `.git` | The template repository starts its own history.
+| `.copier-answers.yml` | The answers given to this deployment.
+| `.deployment-trigger` | A deployment marker.
+| `regenerate-manifests.sh`, `.git-hooks/` | Written by each deployment with its own app's name.
+| `node_modules`, `__pycache__`, `.pytest_cache`, `.venv`, `venv` | Build and cache files.
+|===
+
+=== Step 3. Find it in the catalogue
+
+Ask Claude:
+
+----
+› list the templates
+----
+
+Expected output, among the platform's templates:
+
+----
+{
+  "name": "tkt-notes",
+  "description": "Notes: the web app template with a task count and a support email",
+  "url": "https://github.com/cmxela/tkt-notes",
+  "org": "cmxela",
+  "deployment_type": "app",
+  "source": "user"
+}
+----
+
+`source: user` marks a template from your own catalogue; the platform's templates say `platform`.
+
+=== Step 4. Deploy it as a new app
+
+Ask Claude:
+
+----
+› deploy https://github.com/cmxela/tkt-notes as notes-copy
+----
+
+Use your own account in place of `cmxela`. The deployment is the same as for the platform's templates; a private template is fetched with the install's GitHub token.
+
+=== Step 5. Find your changes in the new app
+
+Ask Claude:
+
+----
+› when notes-copy is up, show its config.js and whether its API has the task count
+----
+
+Expected output, 227 seconds after the deployment started on the reference run:
+
+----
+window.__PUBLIC_CONFIG__ = {"APP_TITLE":"Notes Copy","SUPPORT_EMAIL":"help@example.com"};
+['/api/v1/tasks/count']
+----
+
+The new app has its own name, database and address, and carries the endpoint and the variable added to `notes`.
+
+=== Step 6. Next steps
+
+* xref:configure-your-app.adoc[Pass configuration to your app]: declare what the next deployment must be asked.
+* xref:ROOT:reference/templates.adoc[Templates catalog]: the templates the platform ships.
+
+== Troubleshooting
+
+[cols="1,1,2",options="header"]
+|===
+| Symptom | Cause | Fix
+
+| Deploying a private template fails in *Copier & Repository Sync* with `fatal: could not read Username for 'https://github.com'`
+| A thinkube-control from before 2026-09-16 clones templates without the GitHub token
+| Update thinkube-control, then deploy again.
+|===

@@ -64,7 +64,7 @@ publishing an app as a template leaves them behind.
 
 * xref:build-a-web-app.adoc[Build a web app from the template] — get a running app, start to finish.
 * xref:change-your-app.adoc[Change your app and ship it] — the day-to-day loop.
-* xref:create-a-template.adoc[Turn your app into a template] — close the circle.
+* xref:publish-your-app-as-a-template.adoc[Publish your app as a template] — close the circle.
 * xref:variables.adoc[How configuration reaches your app] — the four channels,
   and how one of them reaches the browser.
 * xref:anatomy.adoc[What is in this template] — the file-by-file tour.

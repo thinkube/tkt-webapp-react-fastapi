@@ -107,3 +107,63 @@ applications built from this template look like the rest of the platform.
 | `publicEnv: [APP_TITLE]` | The deployment's name reaches the browser
 | `health: /health` | The platform's liveness and readiness checks
 |===
+
+== Write a template by hand
+
+A template is an application repository with two files at its root.
+
+`manifest.yaml` describes the template in the catalog and declares what to ask at deploy time:
+
+[source,yaml]
+----
+apiVersion: thinkube.io/v1
+kind: TemplateManifest
+metadata:
+  name: tkt-my-template
+  title: My Application
+  description: What it is, in one line
+  version: 1.0.0
+  author: Your Name
+  tags: ["webapp", "fastapi"]
+
+parameters: []
+----
+
+`thinkube.yaml` declares what the application is: its containers, how each is built and tested, its routes and the platform services it needs:
+
+[source,yaml]
+----
+apiVersion: thinkube.io/v1
+kind: ThinkubeDeployment
+
+spec:
+  containers:
+    - name: backend
+      build: ./backend
+      port: 8000
+      health: /health
+      test:
+        enabled: true
+        command: "./run_tests.sh"
+        one: "./run_tests.sh <file>"
+
+  routes:
+    - path: /
+      to: backend
+
+  services:
+    - database
+----
+
+The full field list is in the xref:ROOT:reference/thinkube-yaml.adoc[thinkube.yaml reference]. A template that deploys on any cluster:
+
+* gives every container a health endpoint, which the platform uses to decide whether the app is up;
+* gives every container a `run_tests.sh` that runs the whole suite with no arguments and one file with a file argument;
+* uses `+${CONTAINER_REGISTRY}+` for base images in its Dockerfiles;
+* reads what varies from the environment, with no placeholders in the source.
+
+Push it to GitHub and add it to `repositories.json` in `<your account>-metadata`, and it appears in the catalog.
+
+== Give a template its own deploy page
+
+`template-docs/index.html` and `deploy.html` are this template's deploy page. To give your template one, copy the two files into `docs/` in its repository, set `templateUrl` in `deploy.html` to your repository, and describe it in the template card above the form. Switch on GitHub Pages with source branch `main`, folder `/docs`. The page is then at `https://<account>.github.io/<repo>/deploy.html`, and anyone with a Thinkube cluster can deploy your template from it.
