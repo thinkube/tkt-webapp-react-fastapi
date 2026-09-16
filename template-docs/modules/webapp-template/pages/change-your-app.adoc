@@ -1,0 +1,175 @@
+= Change your app and ship it
+:page-type: playbook
+:page-area: gitops
+:page-tagline: Edit the code, run its tests, push, and the new version is live
+:page-difficulty: beginner
+:page-time: 5 min
+:page-risk: low
+:page-tags: Web app, Git, Tests
+:page-order: 20
+:page-updated: 2026-09-16
+:page-aliases: develop.adoc
+
+== Overview
+
+=== Basic idea
+
+Shipping a change should not be a procedure. In a GitOps platform the repository is the only thing you touch: you commit and push, and the platform tests the code, builds new images and replaces the running version. What runs is always a commit you can read, and going back is pushing the previous one.
+
+* *Your checkout is the working copy.* The app is already checked out in Thinkube IDE, at `~/apps/<name>`.
+* *Tests guard the push.* The build runs the app's tests first; a failing test stops the release.
+* *No deploy command.* The push is the deploy.
+
+=== What you'll accomplish
+
+You add an endpoint to the `notes` app that counts your tasks, run its test in Thinkube IDE, push it, and call it on the live app.
+
+=== What to know before starting
+
+*Required*
+
+* An app from the web app template. xref:build-a-web-app.adoc[Build a web app from the template] makes `notes`.
+* Reading short Python.
+
+*Optional*
+
+* xref:anatomy.adoc[What is in the web app template], to find your way in the code.
+
+=== Supported hardware
+
+[cols="1,1,1,2",options="header"]
+|===
+| Node | Architecture | GPU | On the reference run
+
+| tkamd1 | amd64 | none | Thinkube IDE, where the test ran
+| tkamd2 | amd64 | 2 × RTX 3090 | —
+| tkspark | arm64 | GB10 | —
+|===
+
+=== Prerequisites
+
+*Platform*
+
+* Thinkube IDE open, with `~/apps/notes` in the workspace.
+
+*Components*
+
+* None.
+
+=== Time & risk
+
+* *Estimated time:* 5 min. The change was live 171 seconds after the push, tests and image builds included.
+* *Risk level:* Low. A failing test stops the build, so the running version stays as it was.
+* *Rollback:* Revert the commit and push.
+* *Last updated:* 2026-09-16. Measured on one change.
+
+== Instructions
+
+=== Step 1. Make the change
+
+Ask Claude:
+
+----
+› in apps/notes add GET /api/v1/tasks/count that returns how many tasks I have and how many are done, with a test
+----
+
+On the reference run Claude added a route to `backend/app/api/tasks.py`, before the route that takes a task id so `count` is not read as an id:
+
+[source,python]
+----
+@router.get("/count", response_model=TaskCount)
+async def count_tasks(
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Count the current user's tasks.
+    Requires authentication.
+    """
+    mine = db.query(TaskModel).filter(TaskModel.user_id == current_user.sub)
+    return TaskCount(
+        total=mine.count(),
+        done=mine.filter(TaskModel.status == TaskStatus.DONE).count(),
+    )
+----
+
+and a test file, `backend/tests/test_task_count.py`, that creates three tasks, two of them done, and expects `{"total": 3, "done": 2}`.
+
+=== Step 2. Run the test
+
+Every container of the template has a `run_tests.sh`: with no argument it runs the whole suite, with a file it runs that file only. The tests use the platform's PostgreSQL, and every test's rows are rolled back when it ends.
+
+Ask Claude:
+
+----
+› run backend/tests/test_task_count.py in apps/notes
+----
+
+Or by hand:
+
+----
+cd ~/apps/notes/backend && ./run_tests.sh tests/test_task_count.py
+----
+
+Expected output:
+
+----
+tests/test_task_count.py::test_task_count_unauthenticated PASSED
+tests/test_task_count.py::test_task_count_counts_done PASSED
+======================== 2 passed, 11 warnings in 0.17s ========================
+----
+
+=== Step 3. Commit and push
+
+Ask Claude:
+
+----
+› commit the task count and push notes
+----
+
+Or by hand:
+
+----
+git add backend/app/api/tasks.py backend/tests/test_task_count.py
+git commit -m "Count tasks: GET /api/v1/tasks/count"
+git pull --rebase
+git push
+----
+
+The push starts the build: the backend and frontend tests, the images for amd64 and arm64, then the rollout.
+
+=== Step 4. Call it on the live app
+
+Ask Claude:
+
+----
+› tell me when /api/v1/tasks/count is live on notes, then call it as me
+----
+
+Expected output: on the reference run the endpoint appeared in the app's API description, `https://notes.thinkube.com/api/v1/openapi.json`, 171 seconds after the push. Called with the signed-in user's token:
+
+----
+{"total":1,"done":0}
+----
+
+Without a token it answers `{"detail":"Not authenticated"}`, as every endpoint of the app does.
+
+=== Step 5. Next steps
+
+* xref:variables.adoc[How configuration reaches your app]: values the app reads at run time, and the ones the browser may see.
+* xref:create-a-template.adoc[Turn your app into a template]: publish your version for others.
+
+== Troubleshooting
+
+[cols="1,1,2",options="header"]
+|===
+| Symptom | Cause | Fix
+
+| A test run in Thinkube IDE fails with `fe_sendauth: no password supplied`
+| `run_tests.sh` reads the database login from `ADMIN_USERNAME` and `ADMIN_PASSWORD`, and the IDE terminal does not set them
+| Load them before the run: `set -a; . ~/.env; set +a; export ADMIN_USERNAME=tkadmin`, then run the test again.
+
+| `git push` is rejected with `! [rejected] main -> main (non-fast-forward)`
+| After every deploy the build commits the new image tag to the repository, so your checkout is one commit behind
+| Run `git pull --rebase`, then `git push` again.
+|===

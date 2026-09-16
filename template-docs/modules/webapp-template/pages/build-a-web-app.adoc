@@ -1,0 +1,151 @@
+= Build a web app from the template
+:page-type: playbook
+:page-area: gitops
+:page-tagline: A full-stack app with a database and a login, at its own address, from one sentence
+:page-difficulty: beginner
+:page-time: 5 min
+:page-risk: low
+:page-tags: Web app, React, FastAPI
+:page-order: 10
+:page-featured: true
+:page-updated: 2026-09-16
+:page-aliases: deploy.adoc
+
+== Overview
+
+=== Basic idea
+
+A web application has several parts that must work together: a frontend that runs in the browser, a backend that holds the logic, a database, a login, and an address with a certificate. Cloud platforms such as Heroku or Google App Engine assemble those for you from your code, and every push to git ships a new version.
+
+The web app template gives you the same on Thinkube. It is a working task manager, React in the browser and FastAPI on the server, with PostgreSQL and sign-in through Thinkube Identity. Deploying it creates everything around it and gives you your own copy of the code to change.
+
+* *A running app.* Built, tested and deployed at `<name>.<your domain>`, behind your login.
+* *A database of its own.* PostgreSQL, created for the app.
+* *Your repository.* The code in Thinkube Git and checked out in Thinkube IDE, ready to change.
+
+=== What you'll accomplish
+
+You deploy the template as `notes`, sign in to it, create a task, and see what the platform assembled for it.
+
+=== What to know before starting
+
+*Required*
+
+* Asking Claude Code in Thinkube IDE to do things on the platform.
+
+*Optional*
+
+* xref:ROOT:how-it-works/deploy-loop.adoc[The GitOps deploy loop], to see how a push becomes a running app.
+* xref:anatomy.adoc[What is in the web app template], the file-by-file tour.
+
+=== Supported hardware
+
+[cols="1,1,1,2",options="header"]
+|===
+| Node | Architecture | GPU | On the reference run
+
+| tkamd1 | amd64 | none | control plane
+| tkamd2 | amd64 | 2 × RTX 3090 | —
+| tkspark | arm64 | GB10 | —
+|===
+
+The app needs no GPU. Its images are built for amd64 and arm64.
+
+=== Prerequisites
+
+*Platform*
+
+* Thinkube running, with Thinkube IDE open. Ask Claude: _"what's running?"_ PostgreSQL and Thinkube Identity are part of every installation.
+
+*Components*
+
+* None.
+
+=== Time & risk
+
+* *Estimated time:* 5 min. The deploy took 198–209 seconds on seven runs, most of it building and testing the images.
+* *Risk level:* Low. The app is isolated in its own namespace and its own database.
+* *Rollback:* Deploy the template again under the same name; it overwrites the app.
+* *Last updated:* 2026-09-16. Measured on seven deploys.
+
+== Instructions
+
+=== Step 1. Deploy the template
+
+The name you choose becomes the app's address, its database, its login client and its folder.
+
+Ask Claude:
+
+----
+› make an app called notes from the web app template
+----
+
+Claude calls `deploy_template` with `https://github.com/thinkube/tkt-webapp-react-fastapi` and follows `get_deployment_status` until it reports `success`.
+
+Or by hand: in thinkube-control open *Templates*, choose *tkt-webapp-react-fastapi*, name it `notes` and deploy.
+
+Expected output:
+
+----
+status: success
+output: Deployment completed successfully
+duration: 208.8
+----
+
+=== Step 2. Sign in and use it
+
+Open `https://notes.<your domain>`. Thinkube Identity asks you to sign in, then the app opens with its name, *Notes*, in the sidebar. Choose *Create Task*, give it a title and press *Create*.
+
+image::notes-app.png[The notes app after sign-in, with the name Notes in the sidebar and one task, Write the first playbook, created]
+
+The task is stored in the app's own database, under your user.
+
+=== Step 3. See what the platform assembled
+
+Ask Claude:
+
+----
+› what did the deploy create for notes?
+----
+
+Expected output, from the reference run:
+
+[cols="1,2",options="header"]
+|===
+| Created | On the reference run
+
+| Two running containers
+| `notes-backend`, `notes-frontend`
+
+| The address
+| `notes.thinkube.com`, with the certificate in `notes-tls-secret`
+
+| The database credentials
+| `notes-db-credentials`
+
+| The deployment
+| ArgoCD application `notes`: `Synced Healthy`
+
+| The build
+| Argo workflow `notes-build-zj9qd`: `Succeeded`
+
+| Your copy of the code
+| `~/apps/notes` in Thinkube IDE, pushed to Thinkube Git
+|===
+
+=== Step 4. Next steps
+
+* xref:change-your-app.adoc[Change your app and ship it]: add an endpoint, test it and push it live.
+* xref:ROOT:playbooks/run-a-pipeline-from-your-app.adoc[Run a pipeline from your app]: long jobs your app submits.
+* xref:create-a-template.adoc[Turn your app into a template]: publish it for others.
+
+== Troubleshooting
+
+[cols="1,1,2",options="header"]
+|===
+| Symptom | Cause | Fix
+
+| The status stays `queued` before the deploy starts
+| Deployments run one at a time; another one was running
+| Wait. On the reference run `notes` started 106 seconds after it was queued, when the docs site's deploy ended.
+|===

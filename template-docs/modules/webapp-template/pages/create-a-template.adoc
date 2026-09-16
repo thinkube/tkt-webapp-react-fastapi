@@ -24,7 +24,7 @@ in.
 === Give it a deploy page
 
 This template's `template-docs/` holds `index.html` and `deploy.html`, the
-deploy page you saw on xref:deploy.adoc[Deploy this template]. Copier does not
+deploy page you saw on xref:build-a-web-app.adoc[Build a web app from the template]. Copier does not
 copy `template-docs/` into an app, so a template published from your app does
 not carry them. To give your template a deploy page, copy the two files into
 `docs/` in the new repository, edit `templateUrl` in `deploy.html` to your
