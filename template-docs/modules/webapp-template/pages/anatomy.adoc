@@ -159,7 +159,7 @@ The full field list is in the xref:ROOT:reference/thinkube-yaml.adoc[thinkube.ya
 
 * gives every container a health endpoint, which the platform uses to decide whether the app is up;
 * gives every container a `run_tests.sh` that runs the whole suite with no arguments and one file with a file argument;
-* uses `+${CONTAINER_REGISTRY}+` for base images in its Dockerfiles;
+* uses `+${CONTAINER_REGISTRY}+` for base images in its Containerfiles;
 * reads what varies from the environment, with no placeholders in the source.
 
 Push it to GitHub and add it to `repositories.json` in `<your account>-metadata`, and it appears in the catalog.
