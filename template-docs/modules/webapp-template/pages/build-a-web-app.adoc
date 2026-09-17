@@ -35,7 +35,7 @@ You deploy the template as `notes`, sign in to it, create a task, and see what t
 
 *Optional*
 
-* xref:ROOT:how-it-works/deploy-loop.adoc[The GitOps deploy loop], to see how a push becomes a running app.
+* xref:ROOT:apps/index.adoc[Thinkube GitOps], to see how a push becomes a running app.
 * xref:anatomy.adoc[What is in the web app template], the file-by-file tour.
 
 === Supported hardware
