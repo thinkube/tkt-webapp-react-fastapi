@@ -46,7 +46,9 @@ deployment carries the answer.
 
 The platform adds its own variables on top: `APP_NAME`, `APP_TITLE`, `APP_URL`,
 `API_BASE_URL`, `DOMAIN_NAME`, the `KEYCLOAK_*` set, `DATABASE_URL` and the
-credentials for any service you declared.
+credentials for any service you declared. Those credentials are Kubernetes Secrets
+the platform writes through the API at deploy time. `k8s/` names the Secrets and
+holds no credential, so the repository and its git history carry none.
 
 == Secrets
 
