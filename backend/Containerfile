@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Copy requirements and install only additional dependencies not in base
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt || true
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Install ansible and required system packages for template deployment
 RUN apt-get update && apt-get install -y --no-install-recommends \
