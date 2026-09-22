@@ -1,3 +1,6 @@
+# Copyright Alejandro Martínez Corriá and the Thinkube contributors
+# SPDX-License-Identifier: MIT
+
 """Task model for database persistence"""
 from sqlalchemy import Column, Integer, String, Enum, DateTime, Text
 from sqlalchemy.sql import func

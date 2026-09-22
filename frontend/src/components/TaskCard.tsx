@@ -1,3 +1,8 @@
+/*
+ * Copyright Alejandro Martínez Corriá and the Thinkube contributors
+ * SPDX-License-Identifier: MIT
+ */
+
 import { CalendarClock, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { TkButton, TkBadge } from 'thinkube-style/components/buttons-badges';
