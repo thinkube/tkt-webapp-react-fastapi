@@ -3,7 +3,7 @@
 :page-area: gitops
 :page-tagline: Values your app reads at run time, and the few the browser may see
 :page-difficulty: beginner
-:page-time: 5 min
+:page-time: 30 min
 :page-risk: low
 :page-tags: Web app, Configuration, Environment variables
 :page-order: 30
@@ -52,7 +52,7 @@ You add a variable, `SUPPORT_EMAIL`, to the `notes` app, let the browser read it
 
 === Time & risk
 
-* *Estimated time:* 5 min. The variable was live 171 seconds after the push.
+* *Estimated time:* 30 min. The variable was live 171 seconds after the push.
 * *Risk level:* Low. A variable named in `publicEnv` is readable by anyone who opens the app; name only values that are safe to show.
 * *Rollback:* Remove the variable from `thinkube.yaml`, commit and push.
 * *Last updated:* 2026-09-16. Measured on one change.

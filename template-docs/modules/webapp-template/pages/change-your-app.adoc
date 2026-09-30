@@ -3,7 +3,7 @@
 :page-area: gitops
 :page-tagline: Edit the code, run its tests, push, and the new version is live
 :page-difficulty: beginner
-:page-time: 5 min
+:page-time: 30 min
 :page-risk: low
 :page-tags: Web app, Git, Tests
 :page-order: 20
@@ -52,7 +52,7 @@ You add an endpoint to the `notes` app that counts your tasks, run its test in T
 
 === Time & risk
 
-* *Estimated time:* 5 min. The change was live 171 seconds after the push, tests and image builds included.
+* *Estimated time:* 30 min. The change was live 171 seconds after the push, tests and image builds included.
 * *Risk level:* Low. A failing test stops the build, so the running version stays as it was.
 * *Rollback:* Revert the commit and push.
 * *Last updated:* 2026-09-16. Measured on one change.

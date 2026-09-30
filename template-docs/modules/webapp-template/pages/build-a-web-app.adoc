@@ -3,7 +3,7 @@
 :page-area: gitops
 :page-tagline: A full-stack app with a database and a login, at its own address, from one sentence
 :page-difficulty: beginner
-:page-time: 5 min
+:page-time: 30 min
 :page-risk: low
 :page-tags: Web app, React, FastAPI
 :page-order: 10
@@ -55,7 +55,7 @@ You deploy the template as `notes`, sign in to it, create a task, and see what t
 
 === Time & risk
 
-* *Estimated time:* 5 min. The deploy took 198–209 seconds on seven runs, most of it building and testing the images.
+* *Estimated time:* 30 min. The deploy took 198–209 seconds on seven runs, most of it building and testing the images.
 * *Risk level:* Low. The app is isolated in its own namespace and its own database.
 * *Rollback:* Deploy the template again under the same name; it overwrites the app.
 * *Last updated:* 2026-09-16. Measured on seven deploys.

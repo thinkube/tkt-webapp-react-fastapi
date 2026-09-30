@@ -3,7 +3,7 @@
 :page-area: gitops
 :page-tagline: Turn an app you improved into a template anyone on your cluster can deploy
 :page-difficulty: beginner
-:page-time: 5 min
+:page-time: 30 min
 :page-risk: low
 :page-tags: Web app, Templates, GitHub
 :page-order: 40
@@ -54,7 +54,7 @@ You publish the `notes` app, with the task count and the support email added in 
 
 === Time & risk
 
-* *Estimated time:* 5 min. The publish took 22 seconds; the deployment from the published template took 227 seconds.
+* *Estimated time:* 30 min. The publish took 22 seconds; the deployment from the published template took 227 seconds.
 * *Risk level:* Low. Publishing only reads the app. Publishing again under the same template name replaces that repository's contents and history with the app as it is now.
 * *Rollback:* Delete the template repository on GitHub and its entry in `repositories.json` of `<your account>-metadata`.
 * *Last updated:* 2026-09-16. Measured on one publish and one deployment.
