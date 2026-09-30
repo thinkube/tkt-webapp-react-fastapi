@@ -55,7 +55,7 @@ You deploy the template as `notes`, sign in to it, create a task, and see what t
 
 === Time & risk
 
-* *Estimated time:* 30 min. The deploy took 198–209 seconds on seven runs, most of it building and testing the images.
+* *Estimated time:* 30 min. The deploy takes about 3–4 minutes, most of it building and testing the images: 198–209 seconds on seven runs.
 * *Risk level:* Low. The app is isolated in its own namespace and its own database.
 * *Rollback:* Deploy the template again under the same name; it overwrites the app.
 * *Last updated:* 2026-09-16. Measured on seven deploys.
@@ -72,7 +72,7 @@ Ask Claude:
 › make an app called notes from the web app template
 ----
 
-Claude calls `deploy_template` with `https://github.com/thinkube/tkt-webapp-react-fastapi` and follows `get_deployment_status` until it reports `success`.
+Claude deploys the template and waits until it is done.
 
 Or by hand: in Thinkube Control open *Templates*, choose *tkt-webapp-react-fastapi*, name it `notes` and deploy.
 
@@ -139,5 +139,5 @@ Expected output, from the reference run:
 
 | The status stays `queued` before the deploy starts
 | Deployments run one at a time; another one was running
-| Wait. On the reference run `notes` started 106 seconds after it was queued, when the docs site's deploy ended.
+| Wait. It starts when the deploy before it ends.
 |===

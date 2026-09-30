@@ -14,11 +14,11 @@
 
 === Basic idea
 
-Shipping a change should not be a procedure. In a GitOps platform the repository is the only thing you touch: you commit and push, and the platform tests the code, builds new images and replaces the running version. What runs is always a commit you can read, and going back is pushing the previous one.
+Shipping a change is one push. In a GitOps platform the repository is the only thing you touch: you commit and push, and the platform tests the code, builds new images and replaces the running version. What runs is always a commit you can read, and going back is pushing the previous one.
 
 * *Your checkout is the working copy.* The app is already checked out in Thinkube IDE, at `~/apps/<name>`.
 * *Tests guard the push.* The build runs the app's tests first; a failing test stops the release.
-* *No deploy command.* The push is the deploy.
+* *The push is the deploy.*
 
 === What you'll accomplish
 

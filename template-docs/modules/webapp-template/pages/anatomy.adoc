@@ -4,9 +4,6 @@
 .TL;DR
 A working task manager: React frontend, FastAPI backend, PostgreSQL, sign-in through Thinkube Identity, three languages, tests on both sides. Read this when you want to know what a file is for; ask Claude about any of them by name.
 
-A full-stack task manager: React frontend, FastAPI backend, PostgreSQL, Keycloak
-sign-in, three languages, and tests on both sides.
-
 == Repository layout
 
 [cols="1,3",options="header"]
@@ -17,7 +14,7 @@ sign-in, three languages, and tests on both sides.
 | `thinkube.yaml` | What the application is: containers, tests, routes, services, `publicEnv`.
 | `backend/` | FastAPI application, Alembic migrations, pytest suite.
 | `frontend/` | React application, Vitest suite, nginx config, container entrypoint.
-| `template-docs/` | Two things. `antora.yml` and `modules/` are these pages, built into the Thinkube documentation site. `index.html` and `deploy.html` are the template's own deploy page. Copier leaves this directory out of the apps it makes, so an app's `docs/` is its own.
+| `template-docs/` | Two things. `antora.yml` and `modules/` are these pages, built into the Thinkube documentation site. `index.html` and `deploy.html` are the template's own deploy page. This folder is not copied into apps made from the template, so an app's `docs/` is its own.
 | `k8s/` | Generated at deploy time. Not in the template; not published back.
 |===
 
@@ -28,7 +25,7 @@ sign-in, three languages, and tests on both sides.
 | Path | What it is
 
 | `app/api/tasks.py` | Task CRUD, scoped to the signed-in user.
-| `app/api/auth.py` | Keycloak configuration, code exchange, user info, token refresh.
+| `app/api/auth.py` | Thinkube Identity configuration, code exchange, user info, token refresh.
 | `app/api/tokens.py` | API tokens for calling this app from scripts.
 | `app/core/security.py` | Request authentication.
 | `app/core/config.py` | Settings, read from the environment.
@@ -51,7 +48,7 @@ Routes are served under `/api/v1`.
 | `src/components/` | `TaskCard`, `TaskDialog`, `UserMenu`, `ThemeToggle`, `LanguageMenu`, `RequireAuth`.
 | `src/stores/` | Zustand stores: auth, tasks, tokens.
 | `src/lib/axios.ts` | API client with the token-refresh interceptor.
-| `src/lib/auth.ts` | The OAuth2 code flow against Keycloak.
+| `src/lib/auth.ts` | The OAuth2 code flow against Thinkube Identity.
 | `src/lib/publicConfig.ts` | Reads the variables the deployment published.
 | `src/locales/` | English, Spanish and Catalan.
 | `public-config.sh` | Runs before nginx; writes `config.js` from `PUBLIC_ENV_VARS`.
@@ -72,7 +69,7 @@ Routes are served under `/api/v1`.
 | Translation | react-i18next
 | Tests | Vitest and React Testing Library
 | API | FastAPI, SQLAlchemy, Alembic, PostgreSQL
-| Sign-in | Keycloak, OAuth2 authorization code flow
+| Sign-in | Thinkube Identity, OAuth2 authorization code flow
 |===
 
 The layout is `TkAppLayout` from `thinkube-style`: a collapsible sidebar with
@@ -86,11 +83,11 @@ applications built from this template look like the rest of the platform.
 | Feature | Where to look
 
 | Reading a deployment's variables in the browser | `public-config.sh`, `src/lib/publicConfig.ts`, `publicEnv` in `thinkube.yaml`
-| Sign-in without writing an auth server | `src/lib/auth.ts`, `backend/app/api/auth.py`
+| Sign-in through Thinkube Identity | `src/lib/auth.ts`, `backend/app/api/auth.py`
 | Tokens for machine callers | `src/pages/ApiTokensPage.tsx`, `backend/app/api/tokens.py`
 | Tests that gate the build | `run_tests.sh` in both containers, `test:` in `thinkube.yaml`
 | Migrations that run themselves | `backend/alembic/`, `migrations:` in `thinkube.yaml`
-| A database you did not provision | `services: [database]` in `thinkube.yaml`
+| A database the platform creates for you | `services: [database]` in `thinkube.yaml`
 | Translated interface | `src/locales/`, `src/i18n/index.ts`
 |===
 

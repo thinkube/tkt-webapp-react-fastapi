@@ -9,13 +9,11 @@ database, which domain, which model, what it is called. In Thinkube those things
 arrive as *environment variables*, and the repository holds only the declaration
 that they are needed.
 
-That split is what makes the round trip work. Declarations belong to the
-application, so they travel to a published template. Values belong to the
-deployment, so they cannot leak into one.
+This split lets you publish the app as a template without your values.
 
 == Four channels
 
-All four end as environment variables in the container. None requires a
+All four reach your code as environment variables. None requires a
 placeholder in your source.
 
 [cols="1,2,2",options="header"]
@@ -64,9 +62,9 @@ secrets:
 
 The name is the variable the containers receive. `required` defaults to `true`.
 
-When the app is deployed, or when a commit changes `thinkube.yaml` or `manifest.yaml`, the platform builds one Kubernetes Secret, `<app>-secrets`, in the app's namespace. It holds the declared names the Secrets page has, and no others, however many secrets the page holds. Every container reads it through `envFrom`, so each value arrives under its own name. The Secret is written through the Kubernetes API; `k8s/` only names it, so no value reaches the repository.
+When the app is deployed, or when a commit changes `thinkube.yaml` or `manifest.yaml`, the platform builds one Kubernetes Secret, `<app>-secrets`, in the app's namespace. It holds only the secrets this app declares. Every container reads it through `envFrom`, so each value arrives under its own name.
 
-A required secret the Secrets page does not have stops the deploy, and a commit that would need it:
+A required secret the Secrets page does not have stops the deploy, and any commit that needs it:
 
 ----
 Secret 'SECRETS_CHECK_TOKEN' is required by secrets-check and is not in the Secrets store
@@ -86,7 +84,7 @@ file served by a web server to somebody else's computer. The container's
 environment is on the server; the code is on the client. Nothing carries a value
 across that gap on its own.
 
-`publicEnv` is the bridge, declared per container:
+`publicEnv` lists the variables the browser may read. It is declared per container:
 
 [source,yaml]
 ----

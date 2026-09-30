@@ -14,7 +14,7 @@
 
 === Basic idea
 
-A team's best starting point is an app that already works. Publishing it as a template lets the next app start from there instead of from scratch: same structure, same tests, same configuration declarations, already proven on the platform.
+A team's best starting point is an app that already works. Publishing it as a template lets the next app start from there instead of from an empty project: same structure, same tests, same configuration declarations, already proven on the platform.
 
 In Thinkube a template is an ordinary app repository, so publishing is a copy.
 
@@ -24,7 +24,7 @@ In Thinkube a template is an ordinary app repository, so publishing is a copy.
 
 === What you'll accomplish
 
-You publish the `notes` app, with the task count and the support email added in the earlier playbooks, as the private template `tkt-notes`. Then you deploy it as a new app, `notes-copy`, and find both changes there.
+You publish the `notes` app, with the task count and the support email added in the two previous guides, as the private template `tkt-notes`. Then you deploy it as a new app, `notes-copy`, and find both changes there.
 
 === What to know before starting
 
@@ -71,7 +71,7 @@ Ask Claude:
 › check notes for uncommitted changes and for its name typed into the source instead of read from a variable
 ----
 
-On the reference run the checkout was clean. The name `notes` appeared only in the pre-commit hook and `regenerate-manifests.sh`, which each deployment writes for its own app and which are not published.
+On the reference run the checkout was clean. The name `notes` appeared only in files each deployment writes for itself, which are not published: the pre-commit hook and `regenerate-manifests.sh`.
 
 === Step 2. Publish
 
@@ -164,8 +164,4 @@ The new app has its own name, database and address, and carries the endpoint and
 [cols="1,1,2",options="header"]
 |===
 | Symptom | Cause | Fix
-
-| Deploying a private template fails in *Copier & Repository Sync* with `fatal: could not read Username for 'https://github.com'`
-| A Thinkube Control from before 2026-09-16 clones templates without the GitHub token
-| Update Thinkube Control, then deploy again.
 |===

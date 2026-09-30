@@ -99,12 +99,7 @@ Claude adds the variable under `env` and names it in the frontend's `publicEnv` 
       default: "help@example.com"
 ----
 
-The commit regenerates the app's Kubernetes files:
-
-----
-Pre-commit hook: thinkube.yaml or manifest.yaml changed, regenerating k8s/ manifests...
-k8s/ manifests regenerated and staged for commit.
-----
+The commit updates the app's deployment files for you.
 
 The push rebuilds and redeploys the app.
 
