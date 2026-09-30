@@ -40,16 +40,8 @@ You deploy the template as `notes`, sign in to it, create a task, and see what t
 
 === Supported hardware
 
-[cols="1,1,1,2",options="header"]
-|===
-| Node | Architecture | GPU | On the reference run
-
-| tkamd1 | amd64 | none | control plane
-| tkamd2 | amd64 | 2 × RTX 3090 | —
-| tkspark | arm64 | GB10 | —
-|===
-
-The app needs no GPU. Its images are built for amd64 and arm64.
+* *GPU:* not needed.
+* *Architecture:* amd64 or arm64: the app's images are built for both, so it runs on any node.
 
 === Prerequisites
 

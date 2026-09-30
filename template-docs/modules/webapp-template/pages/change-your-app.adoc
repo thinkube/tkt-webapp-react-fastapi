@@ -37,14 +37,8 @@ You add an endpoint to the `notes` app that counts your tasks, run its test in T
 
 === Supported hardware
 
-[cols="1,1,1,2",options="header"]
-|===
-| Node | Architecture | GPU | On the reference run
-
-| tkamd1 | amd64 | none | Thinkube IDE, where the test ran
-| tkamd2 | amd64 | 2 × RTX 3090 | —
-| tkspark | arm64 | GB10 | —
-|===
+* *GPU:* not needed.
+* *Architecture:* amd64 or arm64: the app's images are built for both, so it runs on any node.
 
 === Prerequisites
 
