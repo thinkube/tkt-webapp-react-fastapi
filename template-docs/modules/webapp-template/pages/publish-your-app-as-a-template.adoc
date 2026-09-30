@@ -34,7 +34,7 @@ You publish the `notes` app, with the task count and the support email added in 
 
 *Optional*
 
-* xref:index.adoc[The template round trip]: why a template carries no placeholders.
+* xref:variables.adoc[How configuration reaches your app]: why a template carries no placeholders.
 * xref:anatomy.adoc#_write_a_template_by_hand[Write a template by hand].
 
 === Supported hardware
@@ -164,4 +164,8 @@ The new app has its own name, database and address, and carries the endpoint and
 [cols="1,1,2",options="header"]
 |===
 | Symptom | Cause | Fix
+
+| An app deployed from your template has no value for a setting your own app had
+| The template carries the declaration, not the value; each deployment gives its own values
+| Set the value for the new app on the *Secrets* page of Thinkube Control, as xref:variables.adoc[How configuration reaches your app] describes.
 |===
