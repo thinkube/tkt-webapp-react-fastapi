@@ -1,5 +1,5 @@
 = How configuration reaches your app
-:page-type: concept
+:page-type: reference
 
 .TL;DR
 What your app needs to know at run time, the database, the domain, the model, its own name, arrives as environment variables when it is deployed. The repository only declares that they are needed, so it can be published as a template without carrying anyone's values.
