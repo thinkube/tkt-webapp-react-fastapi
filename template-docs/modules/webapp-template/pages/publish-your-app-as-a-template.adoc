@@ -19,7 +19,7 @@ A team's best starting point is an app that already works. Publishing it as a te
 In Thinkube a template is an ordinary app repository, so publishing is a copy.
 
 * *Your code goes to your GitHub account.* The platform creates the repository, public or private, and pushes the app's files.
-* *The catalogue learns about it.* The template is added to `<your account>-metadata`, the list thinkube-control reads, so it appears under *Templates*.
+* *The catalogue learns about it.* The template is added to `<your account>-metadata`, the list Thinkube Control reads, so it appears under *Templates*.
 * *Declarations travel, values stay.* The parameters, variables and `publicEnv` names in `thinkube.yaml` go with the template; each deployment gives them its own values.
 
 === What you'll accomplish
@@ -75,7 +75,7 @@ On the reference run the checkout was clean. The name `notes` appeared only in t
 
 === Step 2. Publish
 
-In thinkube-control, open *Templates*. Under *Your Apps*, choose *Publish as Template* on `notes`, and fill in the form:
+In Thinkube Control, open *Templates*. Under *Your Apps*, choose *Publish as Template* on `notes`, and fill in the form:
 
 * *Template Name*: `tkt-notes`. This is the GitHub repository name.
 * *Description*: one line for the catalogue.
@@ -166,6 +166,6 @@ The new app has its own name, database and address, and carries the endpoint and
 | Symptom | Cause | Fix
 
 | Deploying a private template fails in *Copier & Repository Sync* with `fatal: could not read Username for 'https://github.com'`
-| A thinkube-control from before 2026-09-16 clones templates without the GitHub token
-| Update thinkube-control, then deploy again.
+| A Thinkube Control from before 2026-09-16 clones templates without the GitHub token
+| Update Thinkube Control, then deploy again.
 |===

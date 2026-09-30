@@ -25,7 +25,7 @@ placeholder in your source.
 | Deploy-time parameters | `manifest.yaml` `parameters:` | The person deploying, in the form
 | Application variables | `thinkube.yaml` `spec.env:` | The template's default, or the deployer
 | Service dependencies | `thinkube.yaml` `spec.dependencies:` | The platform, resolving another service's URL
-| Secrets | `manifest.yaml` `secrets:` | The Secrets page in thinkube-control; the value never enters the repository or its git history
+| Secrets | `manifest.yaml` `secrets:` | The Secrets page in Thinkube Control; the value never enters the repository or its git history
 |===
 
 A deploy-time parameter is the one to reach for when the answer differs per
@@ -52,7 +52,7 @@ holds no credential, so the repository and its git history carry none.
 
 == Secrets
 
-A token or API key is declared by name in `manifest.yaml`, and its value lives only in the Secrets page of thinkube-control:
+A token or API key is declared by name in `manifest.yaml`, and its value lives only in the Secrets page of Thinkube Control:
 
 [source,yaml]
 ----

@@ -76,7 +76,7 @@ Routes are served under `/api/v1`.
 |===
 
 The layout is `TkAppLayout` from `thinkube-style`: a collapsible sidebar with
-grouped navigation and a top bar. It is the shell thinkube-control uses, so
+grouped navigation and a top bar. It is the shell Thinkube Control uses, so
 applications built from this template look like the rest of the platform.
 
 == What each part demonstrates
