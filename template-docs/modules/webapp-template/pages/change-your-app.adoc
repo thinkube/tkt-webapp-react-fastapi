@@ -50,13 +50,6 @@ You add an endpoint to the `notes` app that counts your tasks, run its test in T
 
 * None.
 
-=== Time & risk
-
-* *Estimated time:* 30 min. The change was live 171 seconds after the push, tests and image builds included.
-* *Risk level:* Low. A failing test stops the build, so the running version stays as it was.
-* *Rollback:* Revert the commit and push.
-* *Last updated:* 2026-09-16. Measured on one change.
-
 == Instructions
 
 === Step 1. Make the change
@@ -149,6 +142,8 @@ Expected output: on the reference run the endpoint appeared in the app's API des
 Without a token it answers `{"detail":"Not authenticated"}`, as every endpoint of the app does.
 
 === Step 5. Next steps
+
+*To undo:* Revert the commit and push.
 
 * xref:configure-your-app.adoc[Pass configuration to your app]: values the app reads at run time, and the ones the browser may see.
 * xref:publish-your-app-as-a-template.adoc[Publish your app as a template]: publish your version for others.

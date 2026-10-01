@@ -52,13 +52,6 @@ You publish the `notes` app, with the task count and the support email added in 
 
 * None.
 
-=== Time & risk
-
-* *Estimated time:* 30 min. The publish took 22 seconds; the deployment from the published template took 227 seconds.
-* *Risk level:* Low. Publishing only reads the app. Publishing again under the same template name replaces that repository's contents and history with the app as it is now.
-* *Rollback:* Delete the template repository on GitHub and its entry in `repositories.json` of `<your account>-metadata`.
-* *Last updated:* 2026-09-16. Measured on one publish and one deployment.
-
 == Instructions
 
 === Step 1. Check the app is ready to share
@@ -155,6 +148,8 @@ window.__PUBLIC_CONFIG__ = {"APP_TITLE":"Notes Copy","SUPPORT_EMAIL":"help@examp
 The new app has its own name, database and address, and carries the endpoint and the variable added to `notes`.
 
 === Step 6. Next steps
+
+*To undo:* Delete the template repository on GitHub and its entry in `repositories.json` of `<your account>-metadata`.
 
 * xref:configure-your-app.adoc[Pass configuration to your app]: declare what the next deployment must be asked.
 * xref:ROOT:reference/templates.adoc[Templates catalog]: the templates the platform ships.

@@ -53,13 +53,6 @@ You deploy the template as `notes`, sign in to it, create a task, and see what t
 
 * None.
 
-=== Time & risk
-
-* *Estimated time:* 30 min. The deploy takes about 3–4 minutes, most of it building and testing the images: 198–209 seconds on seven runs.
-* *Risk level:* Low. The app is isolated in its own namespace and its own database.
-* *Rollback:* Deploy the template again under the same name; it overwrites the app.
-* *Last updated:* 2026-09-16. Measured on seven deploys.
-
 == Instructions
 
 === Step 1. Deploy the template
@@ -126,6 +119,8 @@ Expected output, from the reference run:
 |===
 
 === Step 4. Next steps
+
+*To undo:* Delete the app in Thinkube Control.
 
 * xref:change-your-app.adoc[Change your app and ship it]: add an endpoint, test it and push it live.
 * xref:ROOT:playbooks/run-a-pipeline-from-your-app.adoc[Run a pipeline from your app]: long jobs your app submits.

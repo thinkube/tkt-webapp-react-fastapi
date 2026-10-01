@@ -50,13 +50,6 @@ You add a variable, `SUPPORT_EMAIL`, to the `notes` app, let the browser read it
 
 * None.
 
-=== Time & risk
-
-* *Estimated time:* 30 min. The variable was live 171 seconds after the push.
-* *Risk level:* Low. A variable named in `publicEnv` is readable by anyone who opens the app; name only values that are safe to show.
-* *Rollback:* Remove the variable from `thinkube.yaml`, commit and push.
-* *Last updated:* 2026-09-16. Measured on one change.
-
 == Instructions
 
 === Step 1. See what the page already reads
@@ -121,6 +114,8 @@ window.__PUBLIC_CONFIG__ = {"APP_TITLE":"Notes","SUPPORT_EMAIL":"help@example.co
 Every container receives `SUPPORT_EMAIL`. The page receives only the two names in `publicEnv`; the database password and the other secrets the containers hold stay on the server. The frontend reads a value with `publicValue('SUPPORT_EMAIL')` from `src/lib/publicConfig.ts`.
 
 === Step 4. Next steps
+
+*To undo:* Remove the variable from `thinkube.yaml`, commit and push.
 
 * xref:variables.adoc[How configuration reaches your app]: deploy-time questions, dependencies on other services, and secrets.
 * xref:publish-your-app-as-a-template.adoc[Publish your app as a template]: the declaration travels with the template, the value does not.
