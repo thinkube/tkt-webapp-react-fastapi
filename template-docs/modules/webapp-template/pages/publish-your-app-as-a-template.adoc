@@ -58,7 +58,7 @@ You publish the `notes` app, with the task count and the support email added in 
 
 Everything in `~/apps/notes` is published, uncommitted files included. A name or address typed into the source travels with it, so look for your app's own identity before you publish.
 
-Ask Claude:
+Ask your agent:
 
 ----
 › check notes for uncommitted changes and for its name typed into the source instead of read from a variable
@@ -99,7 +99,7 @@ These are left out of the published repository, because each deployment makes it
 
 === Step 3. Find it in the catalogue
 
-Ask Claude:
+Ask your agent:
 
 ----
 › list the templates
@@ -122,7 +122,7 @@ Expected output, among the platform's templates:
 
 === Step 4. Deploy it as a new app
 
-Ask Claude:
+Ask your agent:
 
 ----
 › deploy https://github.com/cmxela/tkt-notes as notes-copy
@@ -132,7 +132,7 @@ Use your own account in place of `cmxela`. The deployment is the same as for the
 
 === Step 5. Find your changes in the new app
 
-Ask Claude:
+Ask your agent:
 
 ----
 › when notes-copy is up, show its config.js and whether its API has the task count

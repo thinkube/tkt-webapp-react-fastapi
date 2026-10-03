@@ -54,13 +54,13 @@ You add an endpoint to the `notes` app that counts your tasks, run its test in T
 
 === Step 1. Make the change
 
-Ask Claude:
+Ask your agent:
 
 ----
 › in apps/notes add GET /api/v1/tasks/count that returns how many tasks I have and how many are done, with a test
 ----
 
-On the reference run Claude added a route to `backend/app/api/tasks.py`, before the route that takes a task id so `count` is not read as an id:
+On the reference run the agent added a route to `backend/app/api/tasks.py`, before the route that takes a task id so `count` is not read as an id:
 
 [source,python]
 ----
@@ -86,7 +86,7 @@ and a test file, `backend/tests/test_task_count.py`, that creates three tasks, t
 
 Every container of the template has a `run_tests.sh`: with no argument it runs the whole suite, with a file it runs that file only. The tests use the platform's PostgreSQL, and every test's rows are rolled back when it ends.
 
-Ask Claude:
+Ask your agent:
 
 ----
 › run backend/tests/test_task_count.py in apps/notes
@@ -108,7 +108,7 @@ tests/test_task_count.py::test_task_count_counts_done PASSED
 
 === Step 3. Commit and push
 
-Ask Claude:
+Ask your agent:
 
 ----
 › commit the task count and push notes
@@ -127,7 +127,7 @@ The push starts the build: the backend and frontend tests, the images for amd64 
 
 === Step 4. Call it on the live app
 
-Ask Claude:
+Ask your agent:
 
 ----
 › tell me when /api/v1/tasks/count is live on notes, then call it as me

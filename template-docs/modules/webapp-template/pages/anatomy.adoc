@@ -2,7 +2,7 @@
 :page-type: reference
 
 .TL;DR
-A working task manager: React frontend, FastAPI backend, PostgreSQL, sign-in through Thinkube Identity, three languages, tests on both sides. Read this when you want to know what a file is for; ask Claude about any of them by name.
+A working task manager: React frontend, FastAPI backend, PostgreSQL, sign-in through Thinkube Identity, three languages, tests on both sides. Read this when you want to know what a file is for; ask your agent about any of them by name.
 
 == Repository layout
 

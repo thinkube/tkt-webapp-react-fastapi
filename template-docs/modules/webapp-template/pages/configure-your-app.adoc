@@ -56,7 +56,7 @@ You add a variable, `SUPPORT_EMAIL`, to the `notes` app, let the browser read it
 
 The template's frontend reads the app's name from the deployment, which is why the sidebar says *Notes*.
 
-Ask Claude:
+Ask your agent:
 
 ----
 › show me notes' config.js
@@ -70,13 +70,13 @@ window.__PUBLIC_CONFIG__ = {"APP_TITLE":"Notes"};
 
 === Step 2. Declare the variable
 
-Ask Claude:
+Ask your agent:
 
 ----
 › add SUPPORT_EMAIL to notes, default help@example.com, readable by the browser, then commit and push
 ----
 
-Claude adds the variable under `env` and names it in the frontend's `publicEnv` in `apps/notes/thinkube.yaml`:
+The agent adds the variable under `env` and names it in the frontend's `publicEnv` in `apps/notes/thinkube.yaml`:
 
 [source,yaml]
 ----
@@ -98,7 +98,7 @@ The push rebuilds and redeploys the app.
 
 === Step 3. Find it in the backend and the page
 
-Ask Claude:
+Ask your agent:
 
 ----
 › when notes is redeployed, show SUPPORT_EMAIL in the backend and in config.js

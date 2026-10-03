@@ -31,7 +31,7 @@ You deploy the template as `notes`, sign in to it, create a task, and see what t
 
 *Required*
 
-* Asking Claude Code in Thinkube IDE to do things on the platform.
+* Asking your agent in Thinkube IDE to do things on the platform.
 
 *Optional*
 
@@ -47,7 +47,7 @@ You deploy the template as `notes`, sign in to it, create a task, and see what t
 
 *Platform*
 
-* Thinkube running, with Thinkube IDE open. Ask Claude: _"what's running?"_ PostgreSQL and Thinkube Identity are part of every installation.
+* Thinkube running, with Thinkube IDE open. Ask your agent: _"what's running?"_ PostgreSQL and Thinkube Identity are part of every installation.
 
 *Components*
 
@@ -59,13 +59,13 @@ You deploy the template as `notes`, sign in to it, create a task, and see what t
 
 The name you choose becomes the app's address, its database, its login client and its folder.
 
-Ask Claude:
+Ask your agent:
 
 ----
 › make an app called notes from the web app template
 ----
 
-Claude deploys the template and waits until it is done.
+The agent deploys the template and waits until it is done.
 
 Or by hand: in Thinkube Control open *Templates*, choose *tkt-webapp-react-fastapi*, name it `notes` and deploy.
 
@@ -87,7 +87,7 @@ The task is stored in the app's own database, under your user.
 
 === Step 3. See what the platform assembled
 
-Ask Claude:
+Ask your agent:
 
 ----
 › what did the deploy create for notes?
