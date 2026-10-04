@@ -1,0 +1,166 @@
+= What is in this template
+:page-type: reference
+
+.TL;DR
+A working task manager: React frontend, FastAPI backend, PostgreSQL, sign-in through Thinkube Identity, three languages, tests on both sides. Read this when you want to know what a file is for; ask your agent about any of them by name.
+
+== Repository layout
+
+[cols="1,3",options="header"]
+|===
+| Path | What it is
+
+| `manifest.yaml` | Catalog entry: title, description, tags, and the parameters asked at deploy time.
+| `thinkube.yaml` | What the application is: containers, tests, routes, services, `publicEnv`.
+| `backend/` | FastAPI application, Alembic migrations, pytest suite.
+| `frontend/` | React application, Vitest suite, nginx config, container entrypoint.
+| `template-docs/` | Two things. `antora.yml` and `modules/` are these pages, built into the Thinkube documentation site. `index.html` and `deploy.html` are the template's own deploy page. This folder is not copied into apps made from the template, so an app's `docs/` is its own.
+| `k8s/` | Generated at deploy time. Not in the template; not published back.
+|===
+
+== Backend
+
+[cols="1,3",options="header"]
+|===
+| Path | What it is
+
+| `app/api/tasks.py` | Task CRUD, scoped to the signed-in user.
+| `app/api/auth.py` | Thinkube Identity configuration, code exchange, user info, token refresh.
+| `app/api/tokens.py` | API tokens for calling this app from scripts.
+| `app/core/security.py` | Request authentication.
+| `app/core/config.py` | Settings, read from the environment.
+| `app/models/` | SQLAlchemy models and Pydantic schemas.
+| `alembic/` | Migrations. `thinkube.yaml` runs them on startup.
+| `run_tests.sh` | The whole suite with no arguments; one file with a file argument.
+|===
+
+Routes are served under `/api/v1`.
+
+== Frontend
+
+[cols="1,3",options="header"]
+|===
+| Path | What it is
+
+| `src/App.tsx` | The `TkAppLayout` shell: sidebar, top bar, routes.
+| `src/main.tsx` | Entry point, theme provider, router, unauthenticated routes.
+| `src/pages/` | `HomePage` (tasks), `ApiTokensPage`, `LoginPage`, `AuthCallbackPage`, `NotFoundPage`.
+| `src/components/` | `TaskCard`, `TaskDialog`, `UserMenu`, `ThemeToggle`, `LanguageMenu`, `RequireAuth`.
+| `src/stores/` | Zustand stores: auth, tasks, tokens.
+| `src/lib/axios.ts` | API client with the token-refresh interceptor.
+| `src/lib/auth.ts` | The OAuth2 code flow against Thinkube Identity.
+| `src/lib/publicConfig.ts` | Reads the variables the deployment published.
+| `src/locales/` | English, Spanish and Catalan.
+| `public-config.sh` | Runs before nginx; writes `config.js` from `PUBLIC_ENV_VARS`.
+| `run_tests.sh` | Type check, lint, the suite, coverage.
+|===
+
+== Stack
+
+[cols="1,2",options="header"]
+|===
+| Concern | Choice
+
+| UI | React 19, TypeScript, Vite
+| Components | `thinkube-style` — Tk components on shadcn/ui and Radix
+| Styling | Tailwind CSS 4, light and dark themes
+| State | Zustand
+| Routing | React Router
+| Translation | react-i18next
+| Tests | Vitest and React Testing Library
+| API | FastAPI, SQLAlchemy, Alembic, PostgreSQL
+| Sign-in | Thinkube Identity, OAuth2 authorization code flow
+|===
+
+The layout is `TkAppLayout` from `thinkube-style`: a collapsible sidebar with
+grouped navigation and a top bar. It is the shell Thinkube Control uses, so
+applications built from this template look like the rest of the platform.
+
+== What each part demonstrates
+
+[cols="1,2",options="header"]
+|===
+| Feature | Where to look
+
+| Reading a deployment's variables in the browser | `public-config.sh`, `src/lib/publicConfig.ts`, `publicEnv` in `thinkube.yaml`
+| Sign-in through Thinkube Identity | `src/lib/auth.ts`, `backend/app/api/auth.py`
+| Tokens for machine callers | `src/pages/ApiTokensPage.tsx`, `backend/app/api/tokens.py`
+| Tests that gate the build | `run_tests.sh` in both containers, `test:` in `thinkube.yaml`
+| Migrations that run themselves | `backend/alembic/`, `migrations:` in `thinkube.yaml`
+| A database the platform creates for you | `services: [database]` in `thinkube.yaml`
+| Translated interface | `src/locales/`, `src/i18n/index.ts`
+|===
+
+== Deploy-time behaviour
+
+[cols="1,2",options="header"]
+|===
+| Declared | Effect
+
+| `services: [database]` | PostgreSQL database and `DATABASE_URL`
+| `migrations.auto: true` | Alembic runs on startup
+| `routes` | `/api` to the backend, `/` to the frontend
+| `test.enabled: true` | Tests run in CI before the image is built
+| `publicEnv: [APP_TITLE]` | The deployment's name reaches the browser
+| `health: /health` | The platform's liveness and readiness checks
+|===
+
+== Write a template by hand
+
+A template is an application repository with two files at its root.
+
+`manifest.yaml` describes the template in the catalog and declares what to ask at deploy time:
+
+[source,yaml]
+----
+apiVersion: thinkube.io/v1
+kind: TemplateManifest
+metadata:
+  name: tkt-my-template
+  title: My Application
+  description: What it is, in one line
+  version: 1.0.0
+  author: Your Name
+  tags: ["webapp", "fastapi"]
+
+parameters: []
+----
+
+`thinkube.yaml` declares what the application is: its containers, how each is built and tested, its routes and the platform services it needs:
+
+[source,yaml]
+----
+apiVersion: thinkube.io/v1
+kind: ThinkubeDeployment
+
+spec:
+  containers:
+    - name: backend
+      build: ./backend
+      port: 8000
+      health: /health
+      test:
+        enabled: true
+        command: "./run_tests.sh"
+        one: "./run_tests.sh <file>"
+
+  routes:
+    - path: /
+      to: backend
+
+  services:
+    - database
+----
+
+The full field list is in the xref:ROOT:reference/thinkube-yaml.adoc[thinkube.yaml reference]. A template that deploys on any cluster:
+
+* gives every container a health endpoint, which the platform uses to decide whether the app is up;
+* gives every container a `run_tests.sh` that runs the whole suite with no arguments and one file with a file argument;
+* uses `+${CONTAINER_REGISTRY}+` for base images in its Containerfiles;
+* reads what varies from the environment, with no placeholders in the source.
+
+Push it to GitHub and add it to `repositories.json` in `<your account>-metadata`, and it appears in the catalog.
+
+== Give a template its own deploy page
+
+`template-docs/index.html` and `deploy.html` are this template's deploy page. To give your template one, copy the two files into `docs/` in its repository, set `templateUrl` in `deploy.html` to your repository, and describe it in the template card above the form. Switch on GitHub Pages with source branch `main`, folder `/docs`. The page is then at `https://<account>.github.io/<repo>/deploy.html`, and anyone with a Thinkube cluster can deploy your template from it.

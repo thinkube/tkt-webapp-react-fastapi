@@ -1,0 +1,135 @@
+= How configuration reaches your app
+:page-type: reference
+
+.TL;DR
+What your app needs to know at run time, the database, the domain, the model, its own name, arrives as environment variables when it is deployed. The repository only declares that they are needed, so it can be published as a template without carrying anyone's values.
+
+An application needs to know things it cannot know when it is written: which
+database, which domain, which model, what it is called. In Thinkube those things
+arrive as *environment variables*, and the repository holds only the declaration
+that they are needed.
+
+This split lets you publish the app as a template without your values.
+
+== Four channels
+
+All four reach your code as environment variables. None requires a
+placeholder in your source.
+
+[cols="1,2,2",options="header"]
+|===
+| Channel | Declared in | Answered by
+
+| Deploy-time parameters | `manifest.yaml` `parameters:` | The person deploying, in the form
+| Application variables | `thinkube.yaml` `spec.env:` | The template's default, or the deployer
+| Service dependencies | `thinkube.yaml` `spec.dependencies:` | The platform, resolving another service's URL
+| Secrets | `manifest.yaml` `secrets:` | The Secrets page in Thinkube Control; the value never enters the repository or its git history
+|===
+
+A deploy-time parameter is the one to reach for when the answer differs per
+deployment and the deployer knows it. `tkt-stable-diffusion` declares one:
+
+[source,yaml]
+----
+parameters:
+  - name: model_id
+    type: str
+    default: "stabilityai/stable-diffusion-xl-base-1.0"
+    pattern: "^[a-zA-Z0-9-]+/[a-zA-Z0-9._-]+$"
+----
+
+The deployer is asked for `model_id`, with that default and that validation, and
+the container receives `MODEL_ID`. The template carries the question; your
+deployment carries the answer.
+
+The platform adds its own variables on top: `APP_NAME`, `APP_TITLE`, `APP_URL`,
+`API_BASE_URL`, `DOMAIN_NAME`, the `KEYCLOAK_*` set, `DATABASE_URL` and the
+credentials for any service you declared. Those credentials are Kubernetes Secrets
+the platform writes through the API at deploy time. `k8s/` names the Secrets and
+holds no credential, so the repository and its git history carry none.
+
+== Secrets
+
+A token or API key is declared by name in `manifest.yaml`, and its value lives only in the Secrets page of Thinkube Control:
+
+[source,yaml]
+----
+secrets:
+  - name: HF_TOKEN
+    description: Hugging Face token for gated models
+    required: false
+----
+
+The name is the variable the containers receive. `required` defaults to `true`.
+
+When the app is deployed, or when a commit changes `thinkube.yaml` or `manifest.yaml`, the platform builds one Kubernetes Secret, `<app>-secrets`, in the app's namespace. It holds only the secrets this app declares. Every container reads it through `envFrom`, so each value arrives under its own name.
+
+A required secret the Secrets page does not have stops the deploy, and any commit that needs it:
+
+----
+Secret 'SECRETS_CHECK_TOKEN' is required by secrets-check and is not in the Secrets store
+Add it on the Secrets page: https://control.thinkube.com/secrets
+----
+
+An optional secret the page does not have sets no variable.
+
+The Secrets page lists the apps that use each secret. Changing a value there writes it into the Secret of every app that uses it and restarts those apps, so their containers read the new value.
+
+== How the browser gets a value
+
+A backend reads `os.environ` directly. A browser application needs one more step.
+
+Its bundle is built before the deployment exists, and by the time it runs it is a
+file served by a web server to somebody else's computer. The container's
+environment is on the server; the code is on the client. Nothing carries a value
+across that gap on its own.
+
+`publicEnv` lists the variables the browser may read. It is declared per container:
+
+[source,yaml]
+----
+containers:
+  - name: frontend
+    publicEnv:
+      - APP_TITLE
+----
+
+The platform passes those names to the container as `PUBLIC_ENV_VARS`. Before
+nginx starts, `public-config.sh` reads them from the environment and writes them
+into `config.js`, which `index.html` loads before the bundle. The application
+reads them from there:
+
+[source,ts]
+----
+const title = publicValue('APP_TITLE') || t('app.title')
+----
+
+Any variable the container has can be named — one the platform set, one from
+`spec.env`, one wired from a dependency, or a deploy-time parameter. The list
+holds *names*, never values, which is why it is safe for a published template to
+carry it.
+
+== Only the names you list reach the browser
+
+Every container receives the whole environment, including `POSTGRES_PASSWORD`, `KEYCLOAK_CLIENT_SECRET`, `ADMIN_PASSWORD` and `SEAWEEDFS_SECRET_KEY`. `publicEnv` names exactly what the page may read, and nothing else is written to `config.js`:
+
+* *A container without `publicEnv` publishes nothing.* The browser sees no variable until you name one.
+* *Any variable can be named, whoever set it.* The ones a frontend most wants, `APP_TITLE`, `API_BASE_URL` and `KEYCLOAK_CLIENT_ID`, are set by the platform, and you list them by name like your own.
+* *A declared secret stays on the server.* A name declared under `secrets:` in `manifest.yaml` is refused in `publicEnv` at deploy time. Any other value you list is public: everyone who opens the app can read it.
+
+== Choosing where something belongs
+
+[cols="1,2",options="header"]
+|===
+| The value… | Belongs in
+
+| differs per deployment, and the deployer knows it | `manifest.yaml` `parameters:`
+| is part of what the app *is*, with a sensible default | `thinkube.yaml` `spec.env:`
+| is another service's address | `thinkube.yaml` `spec.dependencies:`
+| must never be in the repository | `manifest.yaml` `secrets:`
+| is the app's own behaviour, the same everywhere | plain code — not a variable
+| is read by the browser | any of the above, plus the container's `publicEnv`
+|===
+
+A value a *user* of the running app changes, such as a setting on a preferences
+page, is application data. It belongs in the database, served by the backend.
