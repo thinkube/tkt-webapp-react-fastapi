@@ -43,6 +43,16 @@ file is in. The push to that repository is the deploy.
 - Redeploy only after changing `thinkube.yaml`, and only when the checkout
   is clean and every commit is pushed. It refuses a checkout with
   uncommitted changes or unpushed commits.
+- It also refuses an app that has commits pushed after its last template
+  deploy, and names them. It replaces them only when called with the
+  variable `_replace_developer_commits: true`, keeping them on a branch
+  first. So before such a redeploy, the template must already carry what
+  those commits changed.
+- The pre-commit hook regenerates `k8s/` when `thinkube.yaml` changes, but
+  the build's WorkflowTemplate in the cluster is replaced only by a deploy
+  or a redeploy. A build setting changed in `thinkube.yaml` (a container,
+  its tests, its `buildSize`) reaches the pipeline at the next redeploy,
+  not at the next push.
 
 ## Work inside the backend pod does not last
 
