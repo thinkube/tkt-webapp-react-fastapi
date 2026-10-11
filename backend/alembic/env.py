@@ -34,13 +34,12 @@ target_metadata = Base.metadata
 
 
 def get_database_url():
-    """Construct database URL from environment variables"""
-    user = os.getenv('POSTGRES_USER', 'tkadmin')
-    password = os.getenv('POSTGRES_PASSWORD', '')
-    host = os.getenv('POSTGRES_HOST', 'postgresql-official.postgres.svc.cluster.local')
-    port = os.getenv('POSTGRES_PORT', '5432')
-    database = os.getenv('POSTGRES_DATABASE', 'app_db')
-    
+    """The database URL from the variables the deployment sets; a missing one stops with its name."""
+    names = ('POSTGRES_USER', 'POSTGRES_PASSWORD', 'POSTGRES_HOST', 'POSTGRES_PORT', 'POSTGRES_DATABASE')
+    missing = [name for name in names if not os.getenv(name)]
+    if missing:
+        raise RuntimeError(f"the migrations need {', '.join(missing)}; the deployment sets them")
+    user, password, host, port, database = (os.environ[name] for name in names)
     return f"postgresql://{user}:{password}@{host}:{port}/{database}"
 
 
@@ -75,6 +74,14 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
+    # A caller that has its own connection passes it, as the tests do for their schema.
+    given = config.attributes.get("connection")
+    if given is not None:
+        context.configure(connection=given, target_metadata=target_metadata, compare_type=True, compare_server_default=True)
+        with context.begin_transaction():
+            context.run_migrations()
+        return
+
     # Get the basic configuration
     configuration = config.get_section(config.config_ini_section)
     
