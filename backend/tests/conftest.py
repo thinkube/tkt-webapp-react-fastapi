@@ -4,22 +4,29 @@
 # tests/conftest.py
 """Pytest configuration and fixtures for thinkube-control backend tests."""
 
+import os
+import uuid
+from pathlib import Path
+
 import pytest
 import asyncio
+from alembic import command
+from alembic.config import Config
 from typing import Generator, AsyncGenerator
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.pool import StaticPool
 
 from app import app
-from app.db.session import Base, get_db
+from app.db.session import get_db
 from app.core.config import settings
 
 # Use the real PostgreSQL database for testing
 # Tests run in the cluster and can access PostgreSQL
 from app.core.config import settings
 SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL
+BACKEND = Path(__file__).resolve().parents[1]
 
 @pytest.fixture(scope="session")
 def event_loop():
@@ -30,11 +37,31 @@ def event_loop():
 
 @pytest.fixture(scope="session")
 def db_engine():
-    """One connection pool for the whole run, and the tables it needs."""
+    """One connection pool for the whole run, on a schema of its own made by the migrations.
+
+    Each run creates a fresh schema in the test database, applies the
+    migrations to it, as a deploy does, and drops it at the end. The tests
+    then run on the schema production has, every migration is checked on
+    each run, and runs at the same time never share tables. PGOPTIONS sets
+    the search path for every connection of the process, the app's own
+    included.
+    """
+    schema = f"test_{uuid.uuid4().hex[:12]}"
+    os.environ["PGOPTIONS"] = f"-c search_path={schema}"
     engine = create_engine(SQLALCHEMY_DATABASE_URL, pool_pre_ping=True, pool_size=5)
-    Base.metadata.create_all(bind=engine)
-    yield engine
-    engine.dispose()
+    with engine.begin() as connection:
+        connection.execute(text(f'CREATE SCHEMA "{schema}"'))
+        migrations = Config(str(BACKEND / "alembic.ini"))
+        migrations.set_main_option("script_location", str(BACKEND / "alembic"))
+        migrations.attributes["connection"] = connection
+        command.upgrade(migrations, "head")
+    try:
+        yield engine
+    finally:
+        with engine.begin() as connection:
+            connection.execute(text(f'DROP SCHEMA "{schema}" CASCADE'))
+        engine.dispose()
+        del os.environ["PGOPTIONS"]
 
 
 @pytest.fixture(scope="function")

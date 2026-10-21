@@ -138,6 +138,8 @@ cd frontend && ./run_tests.sh src/pages/__tests__/HomePage.test.tsx
 
 The script builds the test environment in one place: the settings in `.env.test`, and the database credentials the platform hands a test container (`ADMIN_USERNAME`, `ADMIN_PASSWORD`). `thinkube.yaml` declares both modes under each container's `test`, and Thinkube Tandem runs single files through the same script.
 
+The backend tests run on a schema of their own in the app's test database: each run creates it, applies the migrations to it as a deploy does, and drops it at the end. The tests see the schema production has, every run checks the migrations, and runs at the same time never share tables.
+
 ## License
 
 MIT. Code generated from this template is yours: no attribution required, and you may license the app you build however you choose. See [LICENSE](LICENSE).
