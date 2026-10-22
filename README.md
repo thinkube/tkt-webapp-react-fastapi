@@ -97,10 +97,16 @@ than raw HTML, so the app stays consistent with the rest of the platform.
 ## Database Migrations
 
 Alembic runs the migrations when the backend starts (`backend/start.sh`
-runs `alembic upgrade head`). If the models no longer match the migrations,
-the same script generates a migration and applies it. That generated file
-exists only in the running pod and is lost when the pod restarts. To keep
-it, copy it from `backend/alembic/versions/` and commit it.
+runs `alembic upgrade head`). A change to the models needs a migration in
+`backend/alembic/versions/`, committed with it:
+
+```bash
+cd backend && alembic revision --autogenerate -m "what changed"
+```
+
+`tests/test_migrations.py` fails the build when the models and the
+migrations differ, so a model change without its migration never reaches
+the cluster.
 
 ## Working on it
 
