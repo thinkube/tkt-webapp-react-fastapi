@@ -16,6 +16,15 @@ database and sign-in through Keycloak.
   `frontend`. `/api` goes to the backend, everything else to the frontend.
   The platform provides the database.
 
+## As an extension of Thinkube Control
+
+Deployed with the variable `extension: true`, the app becomes a part of
+Thinkube Control: it runs in Control's namespace, Control lists it in its
+navigation, and Control draws its pages inside its own layout. The frontend
+then also builds `dist/extension/index.js` (from `src/extension.tsx`), the
+module Control loads; its API calls go through Control to the backend's
+`/api/v1`. `thinkube.yaml` declares the extension under `spec.extension`.
+
 ## How it reaches a user
 
 A person deploys it from the Templates page in thinkube-control, part of

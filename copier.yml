@@ -1,6 +1,18 @@
 # Copyright Alejandro Martínez Corriá and the Thinkube contributors
 # SPDX-License-Identifier: MIT
 
+# Thinkube Control asks for an extension: the app becomes a part of Control,
+# deployed in Control's namespace and drawn inside Control's layout.
+extension:
+  type: bool
+  default: false
+  help: Deploy as an extension of Thinkube Control
+
+# The platform MAJOR.MINOR the extension is built for; Control sends its own.
+platform_version:
+  type: str
+  when: "{{ extension }}"
+
 # What Copier hands a generated application, and what it keeps back.
 #
 # Copier copies everything by default, so an app made from this template

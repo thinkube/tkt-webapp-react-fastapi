@@ -7,6 +7,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
+import './fonts.css';
 import './globals.css';
 import 'thinkube-style/styles.css';
 import '@/i18n';

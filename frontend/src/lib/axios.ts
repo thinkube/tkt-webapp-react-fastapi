@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
+import axios, { AxiosError, InternalAxiosRequestConfig, type AxiosRequestConfig, type AxiosResponse } from 'axios';
 import { getToken, storeTokens, clearTokens, getRefreshToken } from './tokenManager';
 
 const api = axios.create({
@@ -44,6 +44,10 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
+    // Inside Thinkube Control, Control keeps the session: a 401 is the caller's to show
+    if (hosted) {
+      return Promise.reject(error);
+    }
     const originalRequest = error.config as RetriableRequest | undefined;
 
     if (!originalRequest || originalRequest._retry || originalRequest.url?.includes('/auth/')) {
@@ -91,5 +95,22 @@ api.interceptors.response.use(
     }
   },
 );
+
+let hosted = false;
+
+/** Inside Thinkube Control: every call goes through `request`, Control's
+ * client, which sends it to this app's /api/v1 with the user's session. */
+export function hostRequests(request: (config: AxiosRequestConfig) => Promise<AxiosResponse>) {
+  hosted = true;
+  api.defaults.adapter = (config) =>
+    request({
+      method: config.method,
+      url: config.url,
+      params: config.params,
+      data: config.data,
+      headers: config.headers?.['Content-Type'] ? { 'Content-Type': String(config.headers['Content-Type']) } : undefined,
+      timeout: config.timeout,
+    });
+}
 
 export default api;

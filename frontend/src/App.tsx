@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { useEffect } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { TkAppLayout, type TkNavItem } from 'thinkube-style';
@@ -75,11 +75,20 @@ export default function App() {
         </div>
       }
     >
-      <Routes>
-        <Route path="/" element={<HomePage />} />
+      <AppRoutes>
         <Route path="/tokens" element={<ApiTokensPage />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+      </AppRoutes>
     </TkAppLayout>
+  );
+}
+
+/** The app's pages, the same whether the app runs on its own or, as an extension, inside Thinkube Control. */
+export function AppRoutes({ children }: { children?: ReactNode }) {
+  return (
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      {children}
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
   );
 }
