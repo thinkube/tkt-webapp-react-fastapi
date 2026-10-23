@@ -9,9 +9,6 @@ import { getToken, storeTokens, clearTokens, getRefreshToken } from './tokenMana
 const api = axios.create({
   baseURL: '/api/v1',
   timeout: 30000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
 });
 
 type RetriableRequest = InternalAxiosRequestConfig & { _retry?: boolean };
