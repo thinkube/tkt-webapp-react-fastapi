@@ -27,6 +27,21 @@ describe('hostRequests', () => {
     expect(sent.headers).toEqual({ 'Content-Type': 'application/json' });
   });
 
+  it('leaves a multipart upload to the browser, which writes its boundary', async () => {
+    const request = vi.fn(
+      async (config: AxiosRequestConfig): Promise<AxiosResponse> =>
+        ({ data: {}, status: 200, statusText: 'OK', headers: {}, config }) as AxiosResponse,
+    );
+    hostRequests(request);
+    const form = new FormData();
+    form.append('file', new Blob(['x']), 'x.csv');
+
+    await api.post('/upload', form);
+
+    expect(request.mock.calls[0][0].data).toBe(form);
+    expect(request.mock.calls[0][0].headers).toBeUndefined();
+  });
+
   it('leaves a 401 to the caller instead of refreshing the session', async () => {
     const unauthorized = Object.assign(new Error('401'), { response: { status: 401 }, config: {} });
     hostRequests(async () => {

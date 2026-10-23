@@ -108,7 +108,11 @@ export function hostRequests(request: (config: AxiosRequestConfig) => Promise<Ax
       url: config.url,
       params: config.params,
       data: config.data,
-      headers: config.headers?.['Content-Type'] ? { 'Content-Type': String(config.headers['Content-Type']) } : undefined,
+      // A FormData body carries its own multipart boundary, which the browser writes
+      headers:
+        config.headers?.['Content-Type'] && !(config.data instanceof FormData)
+          ? { 'Content-Type': String(config.headers['Content-Type']) }
+          : undefined,
       timeout: config.timeout,
     });
 }
